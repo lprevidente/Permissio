@@ -1,0 +1,59 @@
+package com.lprevidente.permissio.repository;
+
+import com.lprevidente.permissio.entity.BaseEntity;
+import com.lprevidente.permissio.entity.Creatable;
+import com.lprevidente.permissio.entity.Group;
+import com.lprevidente.permissio.entity.HandlerEntity;
+import jakarta.persistence.*;
+import java.util.Collection;
+import java.util.List;
+import org.springframework.lang.Nullable;
+
+@Entity
+@Table(name = "offices")
+public class Office implements BaseEntity, Group, Creatable, HandlerEntity {
+  @Id private long id;
+
+  private String name;
+
+  private long creatorId;
+
+  @OneToMany(mappedBy = "office")
+  private List<User> members;
+
+  @ManyToMany(fetch = FetchType.LAZY)
+  @JoinTable(
+      name = "office_attendees",
+      joinColumns = @JoinColumn(name = "office_id"),
+      inverseJoinColumns = @JoinColumn(name = "user_id"))
+  private List<User> attendees;
+
+  @Nullable
+  @ManyToOne(fetch = FetchType.LAZY)
+  private User handler;
+
+  @Override
+  public long getId() {
+    return id;
+  }
+
+  @Override
+  public Collection<User> getMembers() {
+    return members;
+  }
+
+  @Override
+  public long getCreatorId() {
+    return creatorId;
+  }
+
+  @Override
+  public long getHandlerId() {
+    return handler != null ? handler.getId() : -1;
+  }
+
+  @Override
+  public String getType() {
+    return "*";
+  }
+}

@@ -1,0 +1,29 @@
+package com.lprevidente.permissio.restrictions;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.Map;
+import org.junit.jupiter.api.Test;
+
+class AccessByMemberRestrictionTest {
+
+  @Test
+  void valid() {
+    final var restriction = new AccessByMemberRestriction("members");
+
+    final var team = new MockTeam();
+    final var requester = new Requester(0, Map.of());
+
+    assertThat(restriction.isSatisfiedBy(requester, team)).isTrue();
+  }
+
+  @Test
+  void notValid() {
+    final var restriction = new AccessByMemberRestriction("members");
+
+    final var team = new MockTeam();
+    final var requester = new Requester(1, Map.of());
+
+    assertThat(restriction.isSatisfiedBy(requester, team)).isFalse();
+  }
+}
