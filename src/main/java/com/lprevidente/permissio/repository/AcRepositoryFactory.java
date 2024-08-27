@@ -1,30 +1,27 @@
 package com.lprevidente.permissio.repository;
 
+import com.lprevidente.permissio.entity.BaseEntity;
 import jakarta.persistence.EntityManager;
-import org.springframework.data.jpa.repository.support.JpaEntityInformationSupport;
-import org.springframework.data.repository.core.EntityInformation;
+import java.io.Serializable;
+import org.springframework.data.jpa.repository.support.JpaEntityInformation;
+import org.springframework.data.jpa.repository.support.JpaRepositoryFactory;
+import org.springframework.data.jpa.repository.support.JpaRepositoryImplementation;
 import org.springframework.data.repository.core.RepositoryInformation;
 import org.springframework.data.repository.core.RepositoryMetadata;
-import org.springframework.data.repository.core.support.RepositoryFactorySupport;
 import org.springframework.lang.NonNull;
 
-public class AcRepositoryFactory extends RepositoryFactorySupport {
-  private final EntityManager entityManager;
+public class AcRepositoryFactory extends JpaRepositoryFactory {
 
   public AcRepositoryFactory(EntityManager entityManager) {
-    this.entityManager = entityManager;
+    super(entityManager);
   }
 
   @NonNull
   @Override
-  public <T, ID> EntityInformation<T, ID> getEntityInformation(Class<T> domainClass) {
-    return (EntityInformation<T, ID>) JpaEntityInformationSupport.getEntityInformation(domainClass, entityManager);
-  }
-
-  @NonNull
-  @Override
-  protected Object getTargetRepository(RepositoryInformation information) {
-    return new AcRepositoryImpl<>(entityManager, information.getDomainType());
+  protected JpaRepositoryImplementation<BaseEntity, Long> getTargetRepository(
+      RepositoryInformation information, EntityManager entityManager) {
+    JpaEntityInformation<?, Serializable> ei = getEntityInformation(information.getDomainType());
+    return new AcRepositoryImpl<>(entityManager, ei, information.getDomainType());
   }
 
   @NonNull

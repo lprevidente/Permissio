@@ -56,4 +56,22 @@ public class Office implements BaseEntity, Group, Creatable, HandlerEntity {
   public String getType() {
     return "*";
   }
+
+  @Override
+  public final boolean equals(Object o) {
+    if (this == o) return true;
+    if (!(o instanceof Office office)) return false;
+
+    return id == office.id;
+  }
+
+  @Override
+  public int hashCode() {
+    return Long.hashCode(id);
+  }
+
+  @Override
+  public String toString() {
+    return "Office{" + "id=" + id + ", name='" + name + '\'' + '}';
+  }
 }

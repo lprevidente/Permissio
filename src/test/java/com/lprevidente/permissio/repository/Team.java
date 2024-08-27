@@ -34,12 +34,25 @@ public class Team implements BaseEntity, Group, Handlers {
   }
 
   @Override
-  public String toString() {
-    return "Team{" + "id=" + id + ", name='" + name + '\'' + '}';
+  public Collection<TeamMember> getHandlers() {
+    return handlers;
   }
 
   @Override
-  public Collection<TeamMember> getHandlers() {
-    return handlers;
+  public final boolean equals(Object o) {
+    if (this == o) return true;
+    if (!(o instanceof Team team)) return false;
+
+    return id == team.id;
+  }
+
+  @Override
+  public int hashCode() {
+    return Long.hashCode(id);
+  }
+
+  @Override
+  public String toString() {
+    return "Team{" + "id=" + id + ", name='" + name + '\'' + '}';
   }
 }

@@ -154,6 +154,7 @@ class PredicateTest {
               .build();
 
       final var users = userRepository.findAll(specification);
+
       assertThat(users).hasSize(2);
     }
 

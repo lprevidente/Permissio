@@ -6,6 +6,7 @@ import jakarta.persistence.PersistenceContext;
 import org.springframework.data.mapping.context.MappingContext;
 import org.springframework.data.repository.core.support.RepositoryFactorySupport;
 import org.springframework.data.repository.core.support.TransactionalRepositoryFactoryBeanSupport;
+import org.springframework.data.repository.query.QueryLookupStrategy;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
@@ -27,6 +28,11 @@ public class AcRepositoryFactoryBean<T extends AcRepository<S>, S extends BaseEn
   @Override
   public void setMappingContext(@NonNull MappingContext<?, ?> mappingContext) {
     super.setMappingContext(mappingContext);
+  }
+
+  @Override
+  public void setQueryLookupStrategyKey(QueryLookupStrategy.Key queryLookupStrategyKey) {
+    super.setQueryLookupStrategyKey(queryLookupStrategyKey);
   }
 
   public void setEscapeCharacter(char escapeCharacter) {}

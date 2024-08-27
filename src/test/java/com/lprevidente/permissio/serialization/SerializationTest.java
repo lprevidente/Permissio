@@ -125,7 +125,8 @@ class SerializationTest {
   @Nested
   class Or {
     private final String json =
-        "{\"@type\":\"or\",\"restrictions\":[{\"@type\":\"accessById\",\"id\":1},{\"@type\":\"accessById\",\"id\":2}]}";
+        """
+            {"@type":"or","restrictions":[{"@type":"accessById","id":1},{"@type":"accessById","id":2}]}""";
 
     @Test
     void serialize() throws JsonProcessingException {

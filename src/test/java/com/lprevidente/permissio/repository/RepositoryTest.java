@@ -20,6 +20,7 @@ import org.springframework.test.context.jdbc.Sql;
 class RepositoryTest {
 
   @Autowired private UserRepository userRepository;
+  @Autowired private OfficeRepository officeRepository;
 
   @Nested
   class FindByID {
@@ -49,5 +50,21 @@ class RepositoryTest {
       final var user = userRepository.findById(2L, specification);
       assertThat(user).isPresent();
     }
+  }
+
+  @Nested
+  class CustomQuery {
+
+      @Test
+      void findByName() {
+        final var office = officeRepository.findByName("Head Office");
+        assertThat(office).isPresent();
+      }
+
+      @Test
+      void findAllByNameOrOrderByIdDesc() {
+        final var offices = officeRepository.findAllByNameOrderByIdDesc("Head Office");
+        assertThat(offices).isNotEmpty();
+      }
   }
 }

@@ -12,12 +12,10 @@ import java.util.Map;
 @JsonSubTypes({
   @JsonSubTypes.Type(value = AccessByIdRestriction.class, name = "accessById"),
   @JsonSubTypes.Type(value = AccessByHandlersRestriction.class, name = "accessByHandlers"),
-    @JsonSubTypes.Type(value = AccessByHandlerRestriction.class, name = "accessByHandler"),
+  @JsonSubTypes.Type(value = AccessByHandlerRestriction.class, name = "accessByHandler"),
   @JsonSubTypes.Type(value = AccessByCreatorRestriction.class, name = "accessByCreator"),
   @JsonSubTypes.Type(value = AccessByMemberRestriction.class, name = "accessByMember"),
-  @JsonSubTypes.Type(
-      value = AccessByRelatedEntityRestriction.class,
-      name = "accessByRelatedEntity"),
+  @JsonSubTypes.Type(value = AccessByRelatedEntityRestriction.class, name = "accessByRelatedEntity"),
   @JsonSubTypes.Type(value = AndRestriction.class, name = "and"),
   @JsonSubTypes.Type(value = OrRestriction.class, name = "or")
 })

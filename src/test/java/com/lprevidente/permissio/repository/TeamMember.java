@@ -47,6 +47,11 @@ class TeamMemberId {
   public int hashCode() {
     return Objects.hash(teamId, memberId);
   }
+
+  @Override
+  public String toString() {
+    return "TeamMemberId{" + "teamId=" + teamId + ", memberId=" + memberId + '}';
+  }
 }
 
 @Entity
@@ -81,5 +86,24 @@ public class TeamMember implements HandlerEntity {
   @Override
   public long getHandlerId() {
     return member.getId();
+  }
+
+  @Override
+  public final boolean equals(Object o) {
+    if (this == o) return true;
+    if (!(o instanceof TeamMember)) return false;
+
+    TeamMember that = (TeamMember) o;
+    return Objects.equals(id, that.id);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hashCode(id);
+  }
+
+  @Override
+  public String toString() {
+    return "TeamMember{" + "id=" + id + '}';
   }
 }

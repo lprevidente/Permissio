@@ -12,17 +12,21 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.query.QueryUtils;
+import org.springframework.data.jpa.repository.support.JpaEntityInformation;
+import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.lang.Nullable;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional(readOnly = true)
-public class AcRepositoryImpl<T extends BaseEntity> implements AcRepository<T> {
+public class AcRepositoryImpl<T extends BaseEntity> extends SimpleJpaRepository<T, Long>
+    implements AcRepository<T> {
   protected static final String FETCH = "jakarta.persistence.fetchgraph";
 
   private final EntityManager em;
   private final Class<T> clazz;
 
-  protected AcRepositoryImpl(EntityManager em, Class<?> clazz) {
+  protected AcRepositoryImpl(EntityManager em, JpaEntityInformation entityInformation, Class<?> clazz) {
+    super(entityInformation, em);
     this.em = em;
     this.clazz = (Class<T>) clazz;
   }
@@ -75,12 +79,30 @@ public class AcRepositoryImpl<T extends BaseEntity> implements AcRepository<T> {
   }
 
   @Override
-  public T save(T entity) {
-    return em.merge(entity);
+  public List<T> findAllById(Iterable<Long> ids, Specification specification) {
+    return findAllById(ids, specification, Sort.unsorted());
   }
 
   @Override
-  public void delete(T entity) {
-    em.remove(entity);
+  public List<T> findAllById(Iterable<Long> ids, Specification specification, Sort sort) {
+    return findAllById(ids, specification, sort, null);
+  }
+
+  @Override
+  public List<T> findAllById(
+      Iterable<Long> ids, Specification specification, Sort sort, String entityGraph) {
+    final var cb = em.getCriteriaBuilder();
+    final var cq = cb.createQuery(clazz);
+    final var root = cq.from(clazz);
+
+    final var predicate = getPredicate(specification, root, cb);
+    final var query = cq.distinct(true).where(cb.and(predicate, root.get("id").in(ids))).orderBy();
+
+    if (sort.isSorted()) query.orderBy(QueryUtils.toOrders(sort, root, cb));
+
+    final var typedQuery = em.createQuery(query);
+    if (entityGraph != null) return typedQuery.setHint(FETCH, entityGraph).getResultList();
+
+    return typedQuery.getResultList();
   }
 }

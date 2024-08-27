@@ -12,10 +12,8 @@ class HandlerId implements Serializable {
   private long id;
   private String type;
 
-  // Default constructor
   public HandlerId() {}
 
-  // Parameterized constructor
   public HandlerId(long id, String type) {
     this.id = id;
     this.type = type;
@@ -49,6 +47,11 @@ class HandlerId implements Serializable {
     HandlerId that = (HandlerId) obj;
     return id == that.id && Objects.equals(type, that.type);
   }
+
+  @Override
+  public String toString() {
+    return "HandlerId{" + "id=" + id + ", type='" + type + '\'' + '}';
+  }
 }
 
 @Entity
@@ -78,5 +81,25 @@ public class Handler implements HandlerEntity {
   @Override
   public String getType() {
     return type;
+  }
+
+  @Override
+  public final boolean equals(Object o) {
+    if (this == o) return true;
+    if (!(o instanceof Handler handler)) return false;
+
+    return id == handler.id;
+  }
+
+  @Override
+  public int hashCode() {
+    int result = Long.hashCode(id);
+    result = 31 * result + Objects.hashCode(type);
+    return result;
+  }
+
+  @Override
+  public String toString() {
+    return "Handler{" + "id=" + id + ", type='" + type + '\'' + '}';
   }
 }
