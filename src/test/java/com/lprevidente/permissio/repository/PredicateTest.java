@@ -67,7 +67,6 @@ class PredicateTest {
 
     @Test
     void byCreatorWithObj() {
-
       final var specification =
           Specification.builder()
               .request(
@@ -338,4 +337,29 @@ class PredicateTest {
       assertThat(offices).hasSize(2);
     }
   }
+
+  @Nested
+  class Related {
+
+    @Test
+    void findAllRelated() {
+      final var specification =
+          Specification.builder()
+              .request(
+                  Requester.builder()
+                      .id(1)
+                      .addPermission(
+                          "office:read",
+                          new AccessByRelatedEntityRestriction(
+                              "members", new AccessByCreatorRestriction("creator")))
+                      .build())
+              .permission("office:read")
+              .build();
+
+      final var users = userRepository.findAllRelated(specification);
+      assertThat(users).hasSize(1);
+    }
+  }
+
+
 }

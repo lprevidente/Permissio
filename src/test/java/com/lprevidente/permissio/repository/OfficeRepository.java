@@ -15,4 +15,11 @@ public interface OfficeRepository extends AcRepository<Office> {
   Optional<Office> findByName(String name);
 
   List<Office> findAllByNameOrderByIdDesc(String name);
+
+  default List<Office> findAllByName(String name) {
+    return getEntityManager()
+        .createQuery("select o from Office o where o.name = :name", Office.class)
+        .setParameter("name", name)
+        .getResultList();
+  }
 }

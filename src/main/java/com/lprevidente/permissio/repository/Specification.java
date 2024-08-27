@@ -31,6 +31,8 @@ public class Specification {
     private final List<String> permissions = new ArrayList<>();
     private Requester requester;
 
+    private SpecificationBuilder() {}
+
     public SpecificationBuilder request(Requester userPrincipal) {
       this.requester = userPrincipal;
       return this;
