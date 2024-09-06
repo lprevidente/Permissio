@@ -1,13 +1,16 @@
 package com.lprevidente.permissio.restrictions;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.HashMap;
 import java.util.Map;
 
 public class Requester {
-  private final long id;
-  private final Map<String, Restriction> permissions;
+  protected long id;
+  protected Map<String, Restriction> permissions;
 
-  public Requester(long id, Map<String, Restriction> permissions) {
+  public Requester(
+      @JsonProperty("id") long id,
+      @JsonProperty("permissions") Map<String, Restriction> permissions) {
     this.id = id;
     this.permissions = permissions;
   }
@@ -25,10 +28,10 @@ public class Requester {
   }
 
   public static class Builder {
-    private final Map<String, Restriction> permissions = new HashMap<>();
-    private long id;
+    protected final Map<String, Restriction> permissions = new HashMap<>();
+    protected long id;
 
-    private Builder() {}
+    protected Builder() {}
 
     public Builder id(long id) {
       this.id = id;
