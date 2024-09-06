@@ -18,7 +18,8 @@ import java.util.Map;
   @JsonSubTypes.Type(value = AccessByRelatedEntityRestriction.class, name = "accessByRelatedEntity"),
   @JsonSubTypes.Type(value = AndRestriction.class, name = "and"),
   @JsonSubTypes.Type(value = OrRestriction.class, name = "or"),
-  @JsonSubTypes.Type(value = ConjunctionRestriction.class, name = "conjunction")
+  @JsonSubTypes.Type(value = ConjunctionRestriction.class, name = "*"),
+  @JsonSubTypes.Type(value = DisjunctionRestriction.class, name = "-")
 })
 public interface Restriction<T> {
 
