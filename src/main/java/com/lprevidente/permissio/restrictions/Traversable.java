@@ -11,7 +11,7 @@ import java.util.Map;
 import org.springframework.util.Assert;
 
 public abstract class Traversable {
-  protected String property;
+  protected final String property;
   protected final List<String> fields;
 
   protected Traversable(String property) {
@@ -22,12 +22,6 @@ public abstract class Traversable {
 
   public String getProperty() {
     return property;
-  }
-
-  public void setProperty(String property) {
-    Assert.hasText(property, "Properties must not be empty");
-    this.fields.clear();
-    this.fields.addAll(Arrays.asList(property.split(":")));
   }
 
   protected From<?, ?> joinLastPath(Path<?> path, Map<String, Join<?, ?>> joinMap) {

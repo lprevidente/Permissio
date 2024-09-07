@@ -1,5 +1,6 @@
 package com.lprevidente.permissio.restrictions;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.lprevidente.permissio.entity.Creatable;
 import jakarta.persistence.criteria.*;
@@ -12,6 +13,7 @@ public class AccessByCreatorRestriction extends Traversable implements Restricti
     super("creatorId");
   }
 
+  @JsonCreator
   public AccessByCreatorRestriction(@JsonProperty("property") String property) {
     super(property);
     Assert.isTrue(fields.size() <= 2, "Property must have at most 2 fields");

@@ -1,5 +1,6 @@
 package com.lprevidente.permissio.restrictions;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.lprevidente.permissio.entity.BaseEntity;
 import com.lprevidente.permissio.entity.Group;
@@ -16,6 +17,7 @@ public class AccessByMemberRestriction extends Traversable implements Restrictio
     super("members");
   }
 
+  @JsonCreator
   public AccessByMemberRestriction(@JsonProperty("property") String property) {
     super(property);
     Assert.isTrue(fields.size() <= 3, "Property must have at most 3 fields");
