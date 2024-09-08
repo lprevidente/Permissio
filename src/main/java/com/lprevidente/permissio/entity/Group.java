@@ -2,7 +2,7 @@ package com.lprevidente.permissio.entity;
 
 import java.util.Collection;
 
-public interface Group extends BaseEntity {
+public interface Group<T extends BaseEntity<ID>, ID> {
 
-  <T extends BaseEntity> Collection<T> getMembers();
+  Collection<T> getMembers();
 }

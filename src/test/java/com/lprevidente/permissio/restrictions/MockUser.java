@@ -7,7 +7,7 @@ import com.lprevidente.permissio.entity.HandlerEntity;
 import java.util.Collection;
 import java.util.List;
 
-public class MockUser implements BaseEntity, Creatable, Handlers {
+public class MockUser implements BaseEntity<Long>, Creatable, Handlers {
 
   @Override
   public long getCreatorId() {
@@ -15,8 +15,8 @@ public class MockUser implements BaseEntity, Creatable, Handlers {
   }
 
   @Override
-  public long getId() {
-    return 0;
+  public Long getId() {
+    return 0L;
   }
 
   public MockOffice getOffice() {

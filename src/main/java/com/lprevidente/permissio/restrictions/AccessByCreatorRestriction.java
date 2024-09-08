@@ -31,7 +31,7 @@ public class AccessByCreatorRestriction extends Traversable implements Restricti
       CriteriaBuilder cb,
       Map<String, Join<?, ?>> joinMap) {
 
-    final var fieldPath = path.get(fields.get(0));
+    final var fieldPath = path.get(fields.getFirst());
     final var returnType = fieldPath.getJavaType();
 
     if (fields.size() == 1 && returnType == Long.class)

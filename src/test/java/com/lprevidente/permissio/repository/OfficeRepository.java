@@ -9,7 +9,7 @@ import java.util.Optional;
 
 @Repository
 @Transactional
-public interface OfficeRepository extends AcRepository<Office> {
+public interface OfficeRepository extends AcRepository<Office, Long> {
 
   @Query("select o from Office o where o.name = :name")
   Optional<Office> findByName(String name);

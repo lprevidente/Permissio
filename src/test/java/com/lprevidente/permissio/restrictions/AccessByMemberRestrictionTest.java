@@ -9,20 +9,20 @@ class AccessByMemberRestrictionTest {
 
   @Test
   void valid() {
-    final var restriction = new AccessByMemberRestriction("members");
+    final var restriction = new AccessByMemberRestriction<MockUser, Long>("members");
 
     final var team = new MockTeam();
-    final var requester = new Requester(0, Map.of());
+    final var requester = new Requester(0L, Map.of());
 
     assertThat(restriction.isSatisfiedBy(requester, team)).isTrue();
   }
 
   @Test
   void notValid() {
-    final var restriction = new AccessByMemberRestriction("members");
+    final var restriction = new AccessByMemberRestriction<MockUser, Long>("members");
 
     final var team = new MockTeam();
-    final var requester = new Requester(1, Map.of());
+    final var requester = new Requester(1L, Map.of());
 
     assertThat(restriction.isSatisfiedBy(requester, team)).isFalse();
   }

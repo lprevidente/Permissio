@@ -30,7 +30,7 @@ class SerializationTest {
 
     @Test
     void serialize() throws JsonProcessingException {
-      final var restriction = new AccessByIdRestriction(1);
+      final var restriction = new AccessByIdRestriction<>(1L);
 
       final var res = mapper.writeValueAsString(restriction);
       assertThat(res).isEqualTo(json);
@@ -75,7 +75,7 @@ class SerializationTest {
 
     @Test
     void serialize() throws Exception {
-      final var restriction = new AccessByMemberRestriction("members:id");
+      final var restriction = new AccessByMemberRestriction<>("members:id");
 
       final var res = mapper.writeValueAsString(restriction);
       JSONAssert.assertEquals(json, res, true);
@@ -127,7 +127,7 @@ class SerializationTest {
     @Test
     void serialize() throws Exception {
       final var restriction =
-          new AndRestriction(new AccessByIdRestriction(1), new AccessByIdRestriction(2));
+          new AndRestriction(new AccessByIdRestriction<>(1L), new AccessByIdRestriction<>(2L));
 
       final var res = mapper.writeValueAsString(restriction);
       JSONAssert.assertEquals(json, res, true);
@@ -154,7 +154,7 @@ class SerializationTest {
     @Test
     void serialize() throws Exception {
       final var restriction =
-          new OrRestriction(new AccessByIdRestriction(1), new AccessByIdRestriction(2));
+          new OrRestriction(new AccessByIdRestriction<>(1), new AccessByIdRestriction<>(2));
 
       final var res = mapper.writeValueAsString(restriction);
       JSONAssert.assertEquals(json, res, true);
@@ -181,7 +181,7 @@ class SerializationTest {
     @Test
     void serialize() throws Exception {
       final var restriction =
-          new AccessByRelatedEntityRestriction("team", new AccessByIdRestriction(1));
+          new AccessByRelatedEntityRestriction("team", new AccessByIdRestriction<>(1));
 
       final var res = mapper.writeValueAsString(restriction);
       JSONAssert.assertEquals(json, res, true);
@@ -196,7 +196,7 @@ class SerializationTest {
           .hasFieldOrPropertyWithValue("property", "team")
           .extracting(AccessByRelatedEntityRestriction::getRestriction)
           .asInstanceOf(InstanceOfAssertFactories.type(AccessByIdRestriction.class))
-          .hasFieldOrPropertyWithValue("id", 1L);
+          .hasFieldOrPropertyWithValue("id", 1);
     }
   }
 }

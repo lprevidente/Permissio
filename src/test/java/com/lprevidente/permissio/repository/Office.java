@@ -11,8 +11,8 @@ import org.springframework.lang.Nullable;
 
 @Entity
 @Table(name = "offices")
-public class Office implements BaseEntity, Group, Creatable, HandlerEntity {
-  @Id private long id;
+public class Office implements BaseEntity<Long>, Group<User, Long>, Creatable, HandlerEntity {
+  @Id private Long id;
 
   private String name;
 
@@ -33,7 +33,7 @@ public class Office implements BaseEntity, Group, Creatable, HandlerEntity {
   private User handler;
 
   @Override
-  public long getId() {
+  public Long getId() {
     return id;
   }
 

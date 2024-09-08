@@ -10,7 +10,7 @@ import org.hibernate.annotations.Where;
 
 @Entity
 @Table(name = "teams")
-public class Team implements BaseEntity, Group, Handlers {
+public class Team implements BaseEntity<Long>, Group<User, Long>, Handlers {
 
   @Id private long id;
 
@@ -24,7 +24,7 @@ public class Team implements BaseEntity, Group, Handlers {
   private List<TeamMember> handlers;
 
   @Override
-  public long getId() {
+  public Long getId() {
     return id;
   }
 
