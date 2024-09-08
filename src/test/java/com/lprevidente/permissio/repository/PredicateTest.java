@@ -29,7 +29,7 @@ class PredicateTest {
     @Test
     void noHasPermission() {
       final var specification =
-          Specification.builder()
+          AcCriteria.builder()
               .request(new Requester(1L, Map.of()))
               .permission("user:read")
               .build();
@@ -41,7 +41,7 @@ class PredicateTest {
     @Test
     void noPermission() {
       final var specification =
-          Specification.builder().request(new Requester(1L, Map.of())).build();
+          AcCriteria.builder().request(new Requester(1L, Map.of())).build();
 
       final var users = userRepository.findAll(specification);
       assertThat(users).isNotEmpty();
@@ -53,7 +53,7 @@ class PredicateTest {
     @Test
     void byId() {
       final var specification =
-          Specification.builder()
+          AcCriteria.builder()
               .request(new Requester(1L, Map.of("user:read", new AccessByIdRestriction<>(1))))
               .permission("user:read")
               .build();
@@ -69,7 +69,7 @@ class PredicateTest {
     @Test
     void byCreatorWithObj() {
       final var specification =
-          Specification.builder()
+          AcCriteria.builder()
               .request(
                   new Requester(1L, Map.of("user:read", new AccessByCreatorRestriction("creator"))))
               .permission("user:read")
@@ -83,7 +83,7 @@ class PredicateTest {
     void byCreatorId() {
 
       final var specification =
-          Specification.builder()
+          AcCriteria.builder()
               .request(new Requester(1L, Map.of("office:read", new AccessByCreatorRestriction())))
               .permission("office:read")
               .build();
@@ -101,7 +101,7 @@ class PredicateTest {
       final var restriction = new AccessByMemberRestriction<>();
 
       final var specification =
-          Specification.builder()
+          AcCriteria.builder()
               .request(new Requester(1L, Map.of("office:read", restriction)))
               .permission("office:read")
               .build();
@@ -115,7 +115,7 @@ class PredicateTest {
       final var restriction = new AccessByMemberRestriction<>("attendees");
 
       final var specification =
-          Specification.builder()
+          AcCriteria.builder()
               .request(new Requester(1L, Map.of("office:read", restriction)))
               .permission("office:read")
               .build();
@@ -130,7 +130,7 @@ class PredicateTest {
       final var restriction = new AccessByMemberRestriction<>("members:member");
 
       final var specification =
-          Specification.builder()
+          AcCriteria.builder()
               .request(new Requester(1L, Map.of("team:read", restriction)))
               .permission("team:read")
               .build();
@@ -148,7 +148,7 @@ class PredicateTest {
       final var restriction = new AccessByHandlersRestriction();
 
       final var specification =
-          Specification.builder()
+          AcCriteria.builder()
               .request(new Requester(1L, Map.of("user:read", restriction)))
               .permission("user:read")
               .build();
@@ -163,7 +163,7 @@ class PredicateTest {
       final var restriction = new AccessByHandlersRestriction("HR", "handlers");
 
       final var specification =
-          Specification.builder()
+          AcCriteria.builder()
               .request(new Requester(1L, Map.of("user:read", restriction)))
               .permission("user:read")
               .build();
@@ -177,7 +177,7 @@ class PredicateTest {
       final var restriction = new AccessByHandlersRestriction("HR", "handlers:id");
 
       final var specification =
-          Specification.builder()
+          AcCriteria.builder()
               .request(new Requester(1L, Map.of("user:read", restriction)))
               .permission("user:read")
               .build();
@@ -191,7 +191,7 @@ class PredicateTest {
       final var restriction = new AccessByHandlersRestriction("*", "handlers:member");
 
       final var specification =
-          Specification.builder()
+          AcCriteria.builder()
               .request(new Requester(1L, Map.of("user:read", restriction)))
               .permission("user:read")
               .build();
@@ -210,7 +210,7 @@ class PredicateTest {
               new AccessByIdRestriction<>(2L), new AccessByCreatorRestriction("creator:id"));
 
       final var specification =
-          Specification.builder()
+          AcCriteria.builder()
               .request(new Requester(1L, Map.of("user:read", restriction)))
               .permission("user:read")
               .build();
@@ -224,7 +224,7 @@ class PredicateTest {
       final var restriction = new AndRestriction();
 
       final var specification =
-          Specification.builder()
+          AcCriteria.builder()
               .request(new Requester(1L, Map.of("user:read", restriction)))
               .permission("user:read")
               .build();
@@ -244,7 +244,7 @@ class PredicateTest {
               new AccessByIdRestriction<>(1L), new AccessByCreatorRestriction("creator:id"));
 
       final var specification =
-          Specification.builder()
+          AcCriteria.builder()
               .request(new Requester(1L, Map.of("user:read", restriction)))
               .permission("user:read")
               .build();
@@ -258,7 +258,7 @@ class PredicateTest {
       final var restriction = new OrRestriction();
 
       final var specification =
-          Specification.builder()
+          AcCriteria.builder()
               .request(new Requester(1L, Map.of("user:read", restriction)))
               .permission("user:read")
               .build();
@@ -277,7 +277,7 @@ class PredicateTest {
                   "teams:team", new AccessByHandlersRestriction("*", "handlers:member")));
 
       final var specification =
-          Specification.builder()
+          AcCriteria.builder()
               .request(new Requester(1L, Map.of("user:read", restriction)))
               .permission("user:read")
               .build();
@@ -296,7 +296,7 @@ class PredicateTest {
           new AccessByRelatedEntityRestriction("office", new AccessByIdRestriction<>(1L));
 
       final var specification =
-          Specification.builder()
+          AcCriteria.builder()
               .request(new Requester(1L, Map.of("user:read", restriction)))
               .permission("user:read")
               .build();
@@ -312,7 +312,7 @@ class PredicateTest {
           new AccessByRelatedEntityRestriction("teams:team", new AccessByIdRestriction<>(1L));
 
       final var specification =
-          Specification.builder()
+          AcCriteria.builder()
               .request(new Requester(1L, Map.of("user:read", restriction)))
               .permission("user:read")
               .build();
@@ -329,7 +329,7 @@ class PredicateTest {
               new OrRestriction(new AccessByIdRestriction<>(1L), new AccessByIdRestriction<>(2L)));
 
       final var specification =
-          Specification.builder()
+          AcCriteria.builder()
               .request(new Requester(1L, Map.of("user:read", restriction)))
               .permission("user:read")
               .build();
@@ -345,7 +345,7 @@ class PredicateTest {
     @Test
     void findAllRelated() {
       final var specification =
-          Specification.builder()
+          AcCriteria.builder()
               .request(
                   Requester.builder()
                       .id(1)

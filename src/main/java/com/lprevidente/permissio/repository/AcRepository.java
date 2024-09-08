@@ -2,9 +2,6 @@ package com.lprevidente.permissio.repository;
 
 import com.lprevidente.permissio.entity.BaseEntity;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.Path;
-import jakarta.persistence.criteria.Predicate;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +9,7 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.support.JpaRepositoryImplementation;
 import org.springframework.data.repository.NoRepositoryBean;
 
@@ -21,36 +19,51 @@ public interface AcRepository<T extends BaseEntity<ID>, ID>
 
   EntityManager getEntityManager();
 
-  Predicate getPredicate(Specification specification, Path<T> path, CriteriaBuilder cb);
+  Optional<T> findBy(AcCriteria acCriteria);
 
-  Predicate getPredicateRelated(Specification specification, Path<T> path, CriteriaBuilder cb);
+  Optional<T> findBy(AcCriteria acCriteria, Specification<T> specification);
 
-  Optional<T> findById(ID id, Specification specification);
+  Optional<T> findBy(AcCriteria acCriteria, Specification<T> specification, String entityGraph);
 
-  List<T> findAll(Specification specification);
+  Optional<T> findById(ID id, AcCriteria acCriteria);
 
-  List<T> findAll(Specification specification, Sort sort);
+  Optional<T> findById(ID id, AcCriteria acCriteria, String entityGraph);
 
-  List<T> findAll(Specification specification, Sort sort, String entityGraph);
+  List<T> findAll(AcCriteria acCriteria);
 
-  Page<T> findAll(Specification specification, Pageable pageable);
+  List<T> findAll(AcCriteria acCriteria, String entityGraph);
 
-  Page<T> findAll(Specification specification, Pageable pageable, String entityGraph);
+  List<T> findAll(AcCriteria acCriteria, Specification<T> specification);
 
-  List<T> findAllById(Collection<ID> ids, Specification specification);
+  List<T> findAll(AcCriteria acCriteria, Specification<T> specification, Sort sort);
 
-  List<T> findAllById(Collection<ID> ids, Specification specification, Sort sort);
+  List<T> findAll(AcCriteria acCriteria, Specification<T> specification, Sort sort, String entityGraph);
 
-  List<T> findAllById(
-      Collection<ID> ids, Specification specification, Sort sort, String entityGraph);
+  List<T> findAll(AcCriteria acCriteria, Sort sort);
 
-  List<T> findAllRelated(Specification specification);
+  List<T> findAll(AcCriteria acCriteria, Sort sort, String entityGraph);
 
-  List<T> findAllRelated(Specification specification, Sort sort);
+  Page<T> findAll(AcCriteria acCriteria, Pageable pageable);
 
-  List<T> findAllRelated(Specification specification, Sort sort, String entityGraph);
+  Page<T> findAll(AcCriteria acCriteria, Pageable pageable, String entityGraph);
 
-  boolean existsById(ID id, Specification specification);
+  Page<T> findAll(AcCriteria acCriteria, Specification<T> specification, Pageable pageable);
 
-  Map<ID, Boolean> existsById(Collection<ID> ids, Specification specification);
+  Page<T> findAll(AcCriteria acCriteria, Specification<T> specification, Pageable pageable, String entityGraph);
+
+  List<T> findAllById(Collection<ID> ids, AcCriteria acCriteria);
+
+  List<T> findAllById(Collection<ID> ids, AcCriteria acCriteria, Sort sort);
+
+  List<T> findAllById(Collection<ID> ids, AcCriteria acCriteria, Sort sort, String entityGraph);
+
+  List<T> findAllRelated(AcCriteria acCriteria);
+
+  List<T> findAllRelated(AcCriteria acCriteria, Sort sort);
+
+  List<T> findAllRelated(AcCriteria acCriteria, Sort sort, String entityGraph);
+
+  boolean existsById(ID id, AcCriteria acCriteria);
+
+  Map<ID, Boolean> existsById(Collection<ID> ids, AcCriteria acCriteria);
 }

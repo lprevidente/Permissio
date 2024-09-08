@@ -35,7 +35,7 @@ class RepositoryTest {
     @Test
     void byIdLong() {
       final var specification =
-          Specification.builder()
+          AcCriteria.builder()
               .request(new Requester(1L, Map.of("user:read", new AccessByIdRestriction<>(1))))
               .permission("user:read")
               .build();
@@ -47,7 +47,7 @@ class RepositoryTest {
     @Test
     void byIdString() {
       final var specification =
-          Specification.builder()
+          AcCriteria.builder()
               .request(
                   new Requester(1L, Map.of("product:read", new AccessByIdRestriction<>("SKU001"))))
               .permission("product:read")
@@ -59,7 +59,7 @@ class RepositoryTest {
     @Test
     void byCreator() {
       final var specification =
-          Specification.builder()
+          AcCriteria.builder()
               .request(
                   new Requester(
                       1L, Map.of("user:read", new AccessByCreatorRestriction("creator:id"))))
@@ -99,7 +99,7 @@ class RepositoryTest {
     @Test
     void findAllById() {
       final var specification =
-          Specification.builder()
+          AcCriteria.builder()
               .request(new Requester(1L, Map.of("office:read", new AccessByIdRestriction<>(1))))
               .permission("office:read")
               .build();
@@ -115,7 +115,7 @@ class RepositoryTest {
     @Test
     void findAllUnpaged() {
       final var specification =
-          Specification.builder()
+          AcCriteria.builder()
               .request(new Requester(1L, Map.of("office:read", new AccessByIdRestriction<>(1))))
               .permission("office:read")
               .build();
@@ -129,7 +129,7 @@ class RepositoryTest {
     @Test
     void findAllPagedOne() {
       final var specification =
-          Specification.builder()
+          AcCriteria.builder()
               .request(new Requester(1L, Map.of("office:read", new AccessByIdRestriction<>(1))))
               .permission("office:read")
               .build();
@@ -143,7 +143,7 @@ class RepositoryTest {
     @Test
     void findAllPagedOver() {
       final var specification =
-          Specification.builder()
+          AcCriteria.builder()
               .request(new Requester(1L, Map.of("office:read", new AccessByIdRestriction<>(1))))
               .permission("office:read")
               .build();
@@ -157,8 +157,8 @@ class RepositoryTest {
 
   @Nested
   class Exists {
-    final Specification specification =
-        Specification.builder()
+    final AcCriteria acCriteria =
+        AcCriteria.builder()
             .request(
                 Requester.builder()
                     .id(1)
@@ -169,13 +169,13 @@ class RepositoryTest {
 
     @Test
     void existsById() {
-      final var exists = officeRepository.existsById(1L, specification);
+      final var exists = officeRepository.existsById(1L, acCriteria);
       assertThat(exists).isTrue();
     }
 
     @Test
     void existsByIds() {
-      final var exists = officeRepository.existsById(List.of(1L, 2L), specification);
+      final var exists = officeRepository.existsById(List.of(1L, 2L), acCriteria);
       assertThat(exists).containsKeys(1L, 2L);
       assertThat(exists).extractingByKey(1L).isEqualTo(true);
       assertThat(exists).extractingByKey(2L).isEqualTo(false);
