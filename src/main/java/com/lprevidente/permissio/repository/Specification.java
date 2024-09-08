@@ -6,10 +6,10 @@ import java.util.List;
 import org.springframework.util.Assert;
 
 public class Specification {
-  private final Requester requester;
+  private final Requester<?> requester;
   private final List<String> permissions;
 
-  private Specification(Requester requester, List<String> permissions) {
+  private Specification(Requester<?> requester, List<String> permissions) {
     Assert.notNull(requester, "The requester cannot be null");
     this.permissions = permissions;
     this.requester = requester;
@@ -23,17 +23,17 @@ public class Specification {
     return permissions;
   }
 
-  public Requester getRequester() {
+  public Requester<?> getRequester() {
     return requester;
   }
 
   public static class SpecificationBuilder {
     private final List<String> permissions = new ArrayList<>();
-    private Requester requester;
+    private Requester<?> requester;
 
     private SpecificationBuilder() {}
 
-    public SpecificationBuilder request(Requester userPrincipal) {
+    public SpecificationBuilder request(Requester<?> userPrincipal) {
       this.requester = userPrincipal;
       return this;
     }

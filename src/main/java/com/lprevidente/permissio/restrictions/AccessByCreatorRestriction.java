@@ -7,7 +7,8 @@ import jakarta.persistence.criteria.*;
 import java.util.Map;
 import org.springframework.util.Assert;
 
-public class AccessByCreatorRestriction extends Traversable implements Restriction<Creatable> {
+public class AccessByCreatorRestriction<RequesterID> extends Traversable
+    implements Restriction<Creatable<RequesterID>, Requester<RequesterID>> {
 
   public AccessByCreatorRestriction() {
     super("creatorId");
@@ -20,14 +21,14 @@ public class AccessByCreatorRestriction extends Traversable implements Restricti
   }
 
   @Override
-  public boolean isSatisfiedBy(Requester requester, Creatable obj) {
-    return obj.getCreatorId() == requester.getId();
+  public boolean isSatisfiedBy(Requester<RequesterID> requester, Creatable<RequesterID> obj) {
+    return obj.getCreatorId().equals(requester.getId());
   }
 
   @Override
   public Predicate toPredicate(
-      Requester requester,
-      Path<? extends Creatable> path,
+      Requester<RequesterID> requester,
+      Path<? extends Creatable<RequesterID>> path,
       CriteriaBuilder cb,
       Map<String, Join<?, ?>> joinMap) {
 

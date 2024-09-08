@@ -13,7 +13,8 @@ import java.util.List;
 import java.util.Map;
 import org.springframework.util.Assert;
 
-public class AccessByHandlersRestriction extends Traversable implements Restriction<Handlers> {
+public class AccessByHandlersRestriction<RequesterId> extends Traversable
+    implements Restriction<Handlers<RequesterId>, Requester<RequesterId>> {
   private final String type;
 
   public AccessByHandlersRestriction() {
@@ -38,17 +39,17 @@ public class AccessByHandlersRestriction extends Traversable implements Restrict
   }
 
   @Override
-  public boolean isSatisfiedBy(Requester requester, Handlers handlers) {
+  public boolean isSatisfiedBy(Requester<RequesterId> requester, Handlers<RequesterId> handlers) {
     return handlers.getHandlers().stream()
         .filter(handler -> "*".equals(type) || handler.getType().equals(type))
         .map(HandlerEntity::getHandlerId)
-        .anyMatch(id -> id == requester.getId());
+        .anyMatch(id -> id.equals(requester.getId()));
   }
 
   @Override
   public Predicate toPredicate(
-      Requester requester,
-      Path<? extends Handlers> path,
+      Requester<RequesterId> requester,
+      Path<? extends Handlers<RequesterId>> path,
       CriteriaBuilder cb,
       Map<String, Join<?, ?>> join) {
 

@@ -11,26 +11,27 @@ import java.util.Map;
 import java.util.stream.StreamSupport;
 import org.springframework.util.Assert;
 
-public class AccessByRelatedEntityRestriction extends Traversable implements Restriction<Object> {
+public class AccessByRelatedEntityRestriction<RequesterId> extends Traversable
+    implements Restriction<Object, Requester<RequesterId>> {
 
-  private final Restriction restriction;
+  private final Restriction<?, Requester<RequesterId>> restriction;
 
   @JsonCreator
   public AccessByRelatedEntityRestriction(
       @JsonProperty("property") String property,
-      @JsonProperty("restriction") Restriction restriction) {
+      @JsonProperty("restriction") Restriction<?, Requester<RequesterId>> restriction) {
     super(property);
     Assert.isTrue(fields.size() <= 2, "Property must have at most 2 fields");
     Assert.notNull(restriction, "Properties must not be empty");
     this.restriction = restriction;
   }
 
-  public Restriction getRestriction() {
+  public Restriction<?, Requester<RequesterId>> getRestriction() {
     return restriction;
   }
 
   @Override
-  public boolean isSatisfiedBy(Requester requester, Object baseEntity) {
+  public boolean isSatisfiedBy(Requester<RequesterId> requester, Object baseEntity) {
     final var res = getRelatedEntity(baseEntity, fields.get(0));
 
     if (res instanceof Iterable<?> iterable) {
@@ -61,7 +62,10 @@ public class AccessByRelatedEntityRestriction extends Traversable implements Res
 
   @Override
   public Predicate toPredicate(
-      Requester requester, Path<?> path, CriteriaBuilder cb, Map<String, Join<?, ?>> join) {
+      Requester<RequesterId> requester,
+      Path<?> path,
+      CriteriaBuilder cb,
+      Map<String, Join<?, ?>> join) {
     final var lastPath = joinLastPath(path, join);
     return restriction.toPredicate(requester, lastPath, cb, join);
   }

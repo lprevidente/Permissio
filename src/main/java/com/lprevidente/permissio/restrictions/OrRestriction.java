@@ -9,27 +9,31 @@ import jakarta.persistence.criteria.Predicate;
 import java.util.Arrays;
 import java.util.Map;
 
-public class OrRestriction implements Restriction<Object> {
-  private final Restriction[] restrictions;
+public class OrRestriction<RequesterId> implements Restriction<Object, Requester<RequesterId>> {
+  private final Restriction<?, Requester<RequesterId>>[] restrictions;
 
   @JsonCreator
-  public OrRestriction(@JsonProperty("restrictions") Restriction... restrictions) {
+  public OrRestriction(
+      @JsonProperty("restrictions") Restriction<?, Requester<RequesterId>>... restrictions) {
     this.restrictions = restrictions;
   }
 
-  public Restriction[] getRestrictions() {
+  public Restriction<?, Requester<RequesterId>>[] getRestrictions() {
     return restrictions;
   }
 
   @Override
-  public boolean isSatisfiedBy(Requester requester, Object baseEntity) {
+  public boolean isSatisfiedBy(Requester<RequesterId> requester, Object baseEntity) {
     return Arrays.stream(restrictions)
         .anyMatch(restriction -> restriction.isSatisfiedBy(requester, baseEntity));
   }
 
   @Override
   public Predicate toPredicate(
-      Requester requester, Path<?> path, CriteriaBuilder cb, Map<String, Join<?, ?>> join) {
+      Requester<RequesterId> requester,
+      Path<?> path,
+      CriteriaBuilder cb,
+      Map<String, Join<?, ?>> join) {
     return Arrays.stream(restrictions)
         .map(restriction -> restriction.toPredicate(requester, path, cb, join))
         .reduce(cb::or)
