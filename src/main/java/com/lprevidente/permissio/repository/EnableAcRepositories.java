@@ -10,4 +10,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @EnableJpaRepositories(repositoryFactoryBeanClass = AcRepositoryFactoryBean.class)
 public @interface EnableAcRepositories {
   String[] value() default {};
+
+  String[] basePackages() default {};
+
+  Class<?>[] basePackageClasses() default {};
 }

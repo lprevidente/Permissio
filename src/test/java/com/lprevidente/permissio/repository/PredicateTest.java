@@ -12,7 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
 
 @SpringBootTest
-@EnableAcRepositories("com.lprevidente.permissio.repository")
+@EnableAcRepositories(basePackages = "com.lprevidente.permissio.repository")
 @Sql(scripts = "classpath:users.sql")
 @Sql(
     statements = "DELETE FROM users; DELETE FROM teams; DELETE FROM offices;",

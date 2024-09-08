@@ -1,5 +1,7 @@
 package com.lprevidente.permissio.restrictions;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.lprevidente.permissio.entity.HandlerEntity;
 import com.lprevidente.permissio.entity.Handlers;
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -22,7 +24,9 @@ public class AccessByHandlersRestriction extends Traversable implements Restrict
     this("*", property);
   }
 
-  public AccessByHandlersRestriction(String type, String property) {
+  @JsonCreator
+  public AccessByHandlersRestriction(
+      @JsonProperty("type") String type, @JsonProperty("property") String property) {
     super(property);
     Assert.isTrue(fields.size() <= 3, "Property must have at most 3 fields");
     Assert.hasText(type, "Type must not be empty");
