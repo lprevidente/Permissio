@@ -35,7 +35,8 @@ public class AcRepositoryFactoryBean<T extends AcRepository<S, ID>, S extends Ba
     super.setQueryLookupStrategyKey(queryLookupStrategyKey);
   }
 
-  public void setEscapeCharacter(char escapeCharacter) {}
+  public void setEscapeCharacter(char escapeCharacter) {
+  }
 
   @Override
   @NonNull

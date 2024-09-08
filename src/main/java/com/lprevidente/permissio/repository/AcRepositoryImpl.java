@@ -10,6 +10,9 @@ import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
 import java.util.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.query.QueryUtils;
 import org.springframework.data.jpa.repository.support.JpaEntityInformation;
@@ -100,6 +103,28 @@ public class AcRepositoryImpl<T extends BaseEntity<ID>, ID> extends SimpleJpaRep
     if (entityGraph != null) return typedQuery.setHint(FETCH, entityGraph).getResultList();
 
     return typedQuery.getResultList();
+  }
+
+  @Override
+  public Page<T> findAll(Specification specification, Pageable pageable) {
+    return findAll(specification, pageable, null);
+  }
+
+  @Override
+  public Page<T> findAll(Specification specification, Pageable pageable, String entityGraph) {
+    if (pageable.isUnpaged()) return new PageImpl<>(findAll(specification));
+
+    final var cb = em.getCriteriaBuilder();
+    final var cq = cb.createQuery(clazz);
+    final var root = cq.from(clazz);
+
+    final var predicate = getPredicate(specification, root, cb);
+    final var query = cq.distinct(true).where(predicate);
+
+    final var typedQuery = em.createQuery(query);
+    if (entityGraph != null) typedQuery.setHint(FETCH, entityGraph);
+
+    return readPage(typedQuery, getDomainClass(), pageable, null);
   }
 
   @Override

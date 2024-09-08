@@ -9,6 +9,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.support.JpaRepositoryImplementation;
 import org.springframework.data.repository.NoRepositoryBean;
@@ -30,6 +32,10 @@ public interface AcRepository<T extends BaseEntity<ID>, ID>
   List<T> findAll(Specification specification, Sort sort);
 
   List<T> findAll(Specification specification, Sort sort, String entityGraph);
+
+  Page<T> findAll(Specification specification, Pageable pageable);
+
+  Page<T> findAll(Specification specification, Pageable pageable, String entityGraph);
 
   List<T> findAllById(Collection<ID> ids, Specification specification);
 

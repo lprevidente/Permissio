@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.jdbc.Sql;
 
 @SpringBootTest
@@ -105,6 +106,52 @@ class RepositoryTest {
 
       final var offices = officeRepository.findAllById(List.of(1L, 2L), specification);
       assertThat(offices).isNotEmpty();
+    }
+  }
+
+  @Nested
+  class FindAllPagable {
+
+    @Test
+    void findAllUnpaged() {
+      final var specification =
+          Specification.builder()
+              .request(new Requester(1L, Map.of("office:read", new AccessByIdRestriction<>(1))))
+              .permission("office:read")
+              .build();
+
+      final var page = officeRepository.findAll(specification, Pageable.unpaged());
+      assertThat(page.getTotalElements()).isEqualTo(1);
+      assertThat(page.getTotalPages()).isEqualTo(1);
+      assertThat(page.getContent()).hasSize(1);
+    }
+
+    @Test
+    void findAllPagedOne() {
+      final var specification =
+          Specification.builder()
+              .request(new Requester(1L, Map.of("office:read", new AccessByIdRestriction<>(1))))
+              .permission("office:read")
+              .build();
+
+      final var page = officeRepository.findAll(specification, Pageable.ofSize(5).withPage(0));
+      assertThat(page.getTotalElements()).isEqualTo(1);
+      assertThat(page.getTotalPages()).isEqualTo(1);
+      assertThat(page.getContent()).hasSize(1);
+    }
+
+    @Test
+    void findAllPagedOver() {
+      final var specification =
+          Specification.builder()
+              .request(new Requester(1L, Map.of("office:read", new AccessByIdRestriction<>(1))))
+              .permission("office:read")
+              .build();
+
+      final var page = officeRepository.findAll(specification, Pageable.ofSize(5).withPage(10));
+      assertThat(page.getTotalElements()).isEqualTo(1);
+      assertThat(page.getTotalPages()).isEqualTo(1);
+      assertThat(page.getContent()).isEmpty();
     }
   }
 
