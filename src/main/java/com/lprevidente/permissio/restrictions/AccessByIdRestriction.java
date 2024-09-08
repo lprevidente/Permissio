@@ -9,27 +9,27 @@ import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
 import java.util.Map;
 
-public class AccessByIdRestriction implements Restriction<BaseEntity> {
-  private final long id;
+public class AccessByIdRestriction<ID> implements Restriction<BaseEntity<ID>> {
+  private final ID id;
 
   @JsonCreator
-  public AccessByIdRestriction(@JsonProperty("id") long id) {
+  public AccessByIdRestriction(@JsonProperty("id") ID id) {
     this.id = id;
   }
 
-  public long getId() {
+  public ID getId() {
     return id;
   }
 
   @Override
-  public boolean isSatisfiedBy(Requester requester, BaseEntity baseEntity) {
+  public boolean isSatisfiedBy(Requester requester, BaseEntity<ID> baseEntity) {
     return baseEntity.getId() == id;
   }
 
   @Override
   public Predicate toPredicate(
       Requester requester,
-      Path<? extends BaseEntity> path,
+      Path<? extends BaseEntity<ID>> path,
       CriteriaBuilder cb,
       Map<String, Join<?, ?>> join) {
 

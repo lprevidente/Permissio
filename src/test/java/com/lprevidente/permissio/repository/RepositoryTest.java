@@ -14,23 +14,28 @@ import org.springframework.test.context.jdbc.Sql;
 
 @SpringBootTest
 @EnableAcRepositories("com.lprevidente.permissio.repository")
-@Sql(scripts = "classpath:users.sql")
 @Sql(
-    statements = "DELETE FROM users; DELETE FROM teams; DELETE FROM offices",
+    scripts = {
+      "classpath:users.sql",
+      "classpath:products.sql",
+    })
+@Sql(
+    statements = "DELETE FROM users; DELETE FROM teams; DELETE FROM offices; DELETE FROM products;",
     executionPhase = AFTER_TEST_METHOD)
 class RepositoryTest {
 
   @Autowired private UserRepository userRepository;
   @Autowired private OfficeRepository officeRepository;
+  @Autowired private ProductRepository productRepository;
 
   @Nested
   class FindByID {
 
     @Test
-    void byId() {
+    void byIdLong() {
       final var specification =
           Specification.builder()
-              .request(new Requester(1, Map.of("user:read", new AccessByIdRestriction(1))))
+              .request(new Requester(1L, Map.of("user:read", new AccessByIdRestriction<>(1))))
               .permission("user:read")
               .build();
 
@@ -39,12 +44,24 @@ class RepositoryTest {
     }
 
     @Test
+    void byIdString() {
+      final var specification =
+          Specification.builder()
+              .request(
+                  new Requester(1L, Map.of("product:read", new AccessByIdRestriction<>("SKU001"))))
+              .permission("product:read")
+              .build();
+      final var product = productRepository.findById("SKU001", specification);
+      assertThat(product).isPresent();
+    }
+
+    @Test
     void byCreator() {
       final var specification =
           Specification.builder()
               .request(
                   new Requester(
-                      1, Map.of("user:read", new AccessByCreatorRestriction("creator:id"))))
+                      1L, Map.of("user:read", new AccessByCreatorRestriction("creator:id"))))
               .permission("user:read")
               .build();
 
@@ -82,7 +99,7 @@ class RepositoryTest {
     void findAllById() {
       final var specification =
           Specification.builder()
-              .request(new Requester(1, Map.of("office:read", new AccessByIdRestriction(1))))
+              .request(new Requester(1L, Map.of("office:read", new AccessByIdRestriction<>(1))))
               .permission("office:read")
               .build();
 
@@ -98,7 +115,7 @@ class RepositoryTest {
             .request(
                 Requester.builder()
                     .id(1)
-                    .addPermission("office:read", new AccessByIdRestriction(1L))
+                    .addPermission("office:read", new AccessByIdRestriction<>(1L))
                     .build())
             .permission("office:read")
             .build();

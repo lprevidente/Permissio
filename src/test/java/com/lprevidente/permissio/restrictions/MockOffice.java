@@ -2,10 +2,10 @@ package com.lprevidente.permissio.restrictions;
 
 import com.lprevidente.permissio.entity.BaseEntity;
 
-public class MockOffice implements BaseEntity {
+public class MockOffice implements BaseEntity<Long> {
 
   @Override
-  public long getId() {
-    return 0;
+  public Long getId() {
+    return 0L;
   }
 }

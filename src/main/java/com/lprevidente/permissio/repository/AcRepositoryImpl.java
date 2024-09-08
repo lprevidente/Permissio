@@ -5,7 +5,10 @@ import com.lprevidente.permissio.restrictions.AccessByRelatedEntityRestriction;
 import com.lprevidente.permissio.restrictions.ConjunctionRestriction;
 import com.lprevidente.permissio.restrictions.DisjunctionRestriction;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.criteria.*;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.Path;
+import jakarta.persistence.criteria.Predicate;
 import java.util.*;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.query.QueryUtils;
@@ -15,18 +18,19 @@ import org.springframework.lang.Nullable;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional(readOnly = true)
-public class AcRepositoryImpl<T extends BaseEntity> extends SimpleJpaRepository<T, Long>
-    implements AcRepository<T> {
+public class AcRepositoryImpl<T extends BaseEntity<ID>, ID> extends SimpleJpaRepository<T, ID>
+    implements AcRepository<T, ID> {
   protected static final String FETCH = "jakarta.persistence.fetchgraph";
 
   private final EntityManager em;
   private final Class<T> clazz;
+  private final Class<ID> idClazz;
 
-  protected AcRepositoryImpl(
-      EntityManager em, JpaEntityInformation entityInformation, Class<?> clazz) {
+  protected AcRepositoryImpl(EntityManager em, JpaEntityInformation<T, ID> entityInformation) {
     super(entityInformation, em);
     this.em = em;
-    this.clazz = (Class<T>) clazz;
+    this.clazz = entityInformation.getJavaType();
+    this.idClazz = entityInformation.getIdType();
   }
 
   public EntityManager getEntityManager() {
@@ -63,7 +67,7 @@ public class AcRepositoryImpl<T extends BaseEntity> extends SimpleJpaRepository<
   }
 
   @Override
-  public Optional<T> findById(long id, Specification specification) {
+  public Optional<T> findById(ID id, Specification specification) {
     final var cb = em.getCriteriaBuilder();
     final var cq = cb.createQuery(clazz);
     final var root = cq.from(clazz);
@@ -99,18 +103,18 @@ public class AcRepositoryImpl<T extends BaseEntity> extends SimpleJpaRepository<
   }
 
   @Override
-  public List<T> findAllById(Collection<Long> ids, Specification specification) {
+  public List<T> findAllById(Collection<ID> ids, Specification specification) {
     return findAllById(ids, specification, Sort.unsorted());
   }
 
   @Override
-  public List<T> findAllById(Collection<Long> ids, Specification specification, Sort sort) {
+  public List<T> findAllById(Collection<ID> ids, Specification specification, Sort sort) {
     return findAllById(ids, specification, sort, null);
   }
 
   @Override
   public List<T> findAllById(
-      Collection<Long> ids, Specification specification, Sort sort, String entityGraph) {
+      Collection<ID> ids, Specification specification, Sort sort, String entityGraph) {
     final var cb = em.getCriteriaBuilder();
     final var cq = cb.createQuery(clazz);
     final var root = cq.from(clazz);
@@ -154,7 +158,7 @@ public class AcRepositoryImpl<T extends BaseEntity> extends SimpleJpaRepository<
   }
 
   @Override
-  public boolean existsById(Long id, Specification specification) {
+  public boolean existsById(ID id, Specification specification) {
     final var cb = em.getCriteriaBuilder();
     final var cq = cb.createQuery(Boolean.class);
     final var root = cq.from(clazz);
@@ -166,15 +170,15 @@ public class AcRepositoryImpl<T extends BaseEntity> extends SimpleJpaRepository<
   }
 
   @Override
-  public Map<Long, Boolean> existsById(Collection<Long> ids, Specification specification) {
+  public Map<ID, Boolean> existsById(Collection<ID> ids, Specification specification) {
     final var cb = em.getCriteriaBuilder();
-    final var cq = cb.createQuery(Long.class);
+    final var cq = cb.createQuery(idClazz);
     final var root = cq.from(clazz);
 
     final var predicate = cb.and(root.get("id").in(ids), getPredicate(specification, root, cb));
     cq.where(predicate).select(root.get("id")).distinct(true);
 
-    final var res = new HashMap<Long, Boolean>();
+    final var res = new HashMap<ID, Boolean>();
     em.createQuery(cq).getResultStream().forEach(id -> res.put(id, true));
     ids.forEach(id -> res.putIfAbsent(id, false));
 

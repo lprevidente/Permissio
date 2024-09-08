@@ -22,7 +22,7 @@ class SerializationTest {
 
     @Test
     void serialize() throws JsonProcessingException {
-      final var restriction = new AccessByIdRestriction(1);
+      final var restriction = new AccessByIdRestriction<>(1L);
 
       final var res = new ObjectMapper().writeValueAsString(restriction);
       assertThat(res).isEqualTo(json);
@@ -65,7 +65,7 @@ class SerializationTest {
 
     @Test
     void serialize() throws JsonProcessingException {
-      final var restriction = new AccessByMemberRestriction("members");
+      final var restriction = new AccessByMemberRestriction<>("members");
 
       final var res = new ObjectMapper().writeValueAsString(restriction);
       assertThat(res).isEqualTo(json);
@@ -109,7 +109,7 @@ class SerializationTest {
     @Test
     void serialize() throws JsonProcessingException {
       final var restriction =
-          new AndRestriction(new AccessByIdRestriction(1), new AccessByIdRestriction(2));
+          new AndRestriction(new AccessByIdRestriction<>(1L), new AccessByIdRestriction<>(2L));
 
       final var res = new ObjectMapper().writeValueAsString(restriction);
       assertThat(res).isEqualTo(json);

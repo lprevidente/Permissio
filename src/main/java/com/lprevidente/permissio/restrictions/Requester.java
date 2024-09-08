@@ -5,11 +5,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Requester {
-  protected long id;
+  protected Long id;
   protected Map<String, Restriction> permissions;
 
   public Requester(
-      @JsonProperty("id") long id,
+      @JsonProperty("id") Long id,
       @JsonProperty("permissions") Map<String, Restriction> permissions) {
     this.id = id;
     this.permissions = permissions;
@@ -19,7 +19,7 @@ public class Requester {
     return new Builder();
   }
 
-  public long getId() {
+  public Long getId() {
     return id;
   }
 

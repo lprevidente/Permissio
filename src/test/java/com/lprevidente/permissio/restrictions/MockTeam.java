@@ -5,15 +5,15 @@ import com.lprevidente.permissio.entity.Group;
 import java.util.Collection;
 import java.util.List;
 
-public class MockTeam implements BaseEntity, Group {
+public class MockTeam implements BaseEntity<Long>, Group<MockUser, Long> {
 
   @Override
-  public long getId() {
-    return 0;
+  public Long getId() {
+    return 0L;
   }
 
   @Override
-  public Collection<BaseEntity> getMembers() {
+  public Collection<MockUser> getMembers() {
     return List.of(new MockUser());
   }
 }

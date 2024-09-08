@@ -12,7 +12,7 @@ class AccessByHandlerEntityRestrictionTest {
     final var restriction = new AccessByHandlersRestriction("*", "handlers");
 
     final var user = new MockUser();
-    final var requester = new Requester(0, Map.of());
+    final var requester = new Requester(0L, Map.of());
 
     assertThat(restriction.isSatisfiedBy(requester, user)).isTrue();
   }
@@ -22,7 +22,7 @@ class AccessByHandlerEntityRestrictionTest {
     final var restriction = new AccessByHandlersRestriction("OP", "handlers");
 
     final var user = new MockUser();
-    final var requester = new Requester(1, Map.of());
+    final var requester = new Requester(1L, Map.of());
 
     assertThat(restriction.isSatisfiedBy(requester, user)).isFalse();
   }

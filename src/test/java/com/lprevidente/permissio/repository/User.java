@@ -10,9 +10,9 @@ import org.springframework.lang.Nullable;
 
 @Entity
 @Table(name = "users")
-public class User implements BaseEntity, Creatable, Handlers {
+public class User implements BaseEntity<Long>, Creatable, Handlers {
 
-  @Id private long id;
+  @Id private Long id;
 
   @Nullable
   @ManyToOne(fetch = FetchType.LAZY)
@@ -35,7 +35,7 @@ public class User implements BaseEntity, Creatable, Handlers {
   }
 
   @Override
-  public long getId() {
+  public Long getId() {
     return id;
   }
 

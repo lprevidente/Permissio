@@ -10,10 +10,10 @@ class AccessByRelatedEntityRestrictionTest {
   @Test
   void valid() {
     final var restriction =
-        new AccessByRelatedEntityRestriction("office", new AccessByIdRestriction(0));
+        new AccessByRelatedEntityRestriction("office", new AccessByIdRestriction<>(0L));
 
     final var user = new MockUser();
-    final var requester = new Requester(0, Map.of());
+    final var requester = new Requester(0L, Map.of());
 
     assertThat(restriction.isSatisfiedBy(requester, user)).isTrue();
   }
@@ -21,10 +21,10 @@ class AccessByRelatedEntityRestrictionTest {
   @Test
   void notValid() {
     final var restriction =
-        new AccessByRelatedEntityRestriction("office", new AccessByIdRestriction(1));
+        new AccessByRelatedEntityRestriction("office", new AccessByIdRestriction<>(1L));
 
     final var user = new MockUser();
-    final var requester = new Requester(1, Map.of());
+    final var requester = new Requester(1L, Map.of());
 
     assertThat(restriction.isSatisfiedBy(requester, user)).isFalse();
   }
@@ -32,10 +32,10 @@ class AccessByRelatedEntityRestrictionTest {
   @Test
   void validList() {
     final var restriction =
-        new AccessByRelatedEntityRestriction("teams", new AccessByIdRestriction(0));
+        new AccessByRelatedEntityRestriction("teams", new AccessByIdRestriction<>(0L));
 
     final var user = new MockUser();
-    final var requester = new Requester(0, Map.of());
+    final var requester = new Requester(0L, Map.of());
 
     assertThat(restriction.isSatisfiedBy(requester, user)).isTrue();
   }
@@ -43,10 +43,10 @@ class AccessByRelatedEntityRestrictionTest {
   @Test
   void notValidList() {
     final var restriction =
-        new AccessByRelatedEntityRestriction("teams", new AccessByIdRestriction(1));
+        new AccessByRelatedEntityRestriction("teams", new AccessByIdRestriction<>(1L));
 
     final var user = new MockUser();
-    final var requester = new Requester(1, Map.of());
+    final var requester = new Requester(1L, Map.of());
 
     assertThat(restriction.isSatisfiedBy(requester, user)).isFalse();
   }

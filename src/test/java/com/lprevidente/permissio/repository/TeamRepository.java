@@ -5,4 +5,4 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 @Transactional
-public interface TeamRepository extends AcRepository<Team> {}
+public interface TeamRepository extends AcRepository<Team, Long> {}
