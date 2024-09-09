@@ -61,6 +61,59 @@ public class MyApplication {
 See the [example](https://github.com/lprevidente/Permissio/tree/main/src/test/java/com/lprevidente/permissio/repository)
 provided in test folder to see how to use the library in depth.
 
+#### Extending Restrictions
+
+You can create your own custom restrictions by implementing the `Restriction` interface and registering the subtype with Jackson's `ObjectMapper`.
+
+### Creating a Custom Restriction
+
+1. **Implement the `Restriction` Interface**:
+
+   ```java
+   package com.lprevidente.permissio.restrictions;
+
+   import jakarta.persistence.criteria.CriteriaBuilder;
+   import jakarta.persistence.criteria.Join;
+   import jakarta.persistence.criteria.Path;
+   import jakarta.persistence.criteria.Predicate;
+   import java.util.Map;
+
+   public class CustomRestriction implements Restriction<Object> {
+
+     @Override
+     public boolean isSatisfiedBy(Requester requester, Object baseEntity) {
+       // Custom logic to determine if the restriction is satisfied
+     }
+
+     @Override
+     public Predicate toPredicate(
+         Requester requester, Path<?> path, CriteriaBuilder cb, Map<String, Join<?, ?>> join) {
+       // Custom logic to create a Predicate
+     }
+   }
+   ```
+2.Register the Subtype with ObjectMapper:  Ensure that your custom restriction is recognized by Jackson's ObjectMapper. This can be done in your Spring Boot configuration:
+
+   ```java
+    import com.fasterxml.jackson.databind.ObjectMapper;
+    import com.fasterxml.jackson.databind.jsontype.NamedType;
+    import com.lprevidente.permissio.restrictions.CustomRestriction;
+    import org.springframework.context.annotation.Bean;
+    import org.springframework.context.annotation.Configuration;
+    
+    @Configuration
+    public class JacksonConfig {
+    
+      @Bean
+      public ObjectMapper objectMapper() {
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerSubtypes(new NamedType(CustomRestriction.class, "customRestriction"));
+        return objectMapper;
+      }
+    }
+```
+By following these steps, you can extend the restriction functionality and ensure that your custom restrictions are properly serialized and deserialized by Jackson.
+
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
