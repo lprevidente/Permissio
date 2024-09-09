@@ -11,8 +11,8 @@ import jakarta.persistence.criteria.Predicate;
 import java.util.Map;
 import org.springframework.util.Assert;
 
-public class AccessByMemberRestriction<T extends BaseEntity<ID>, ID> extends Traversable
-    implements Restriction<Group<T, ID>> {
+public class AccessByMemberRestriction<T extends BaseEntity<?>> extends Traversable
+    implements Restriction<Group<T>> {
 
   public AccessByMemberRestriction() {
     super("members");
@@ -25,14 +25,14 @@ public class AccessByMemberRestriction<T extends BaseEntity<ID>, ID> extends Tra
   }
 
   @Override
-  public boolean isSatisfiedBy(Requester requester, Group<T, ID> obj) {
+  public boolean isSatisfiedBy(Requester requester, Group<T> obj) {
     return obj.getMembers().stream().map(BaseEntity::getId).anyMatch(id -> id == requester.getId());
   }
 
   @Override
   public Predicate toPredicate(
       Requester requester,
-      Path<? extends Group<T, ID>> path,
+      Path<? extends Group<T>> path,
       CriteriaBuilder cb,
       Map<String, Join<?, ?>> join) {
     final var lastPath = getLastPath(path, join);

@@ -11,7 +11,7 @@ import org.springframework.lang.Nullable;
 
 @Entity
 @Table(name = "offices")
-public class Office implements BaseEntity<Long>, Group<User, Long>, Creatable, HandlerEntity {
+public class Office implements BaseEntity<Long>, Group<User>, Creatable, HandlerEntity {
   @Id private Long id;
 
   private String name;
