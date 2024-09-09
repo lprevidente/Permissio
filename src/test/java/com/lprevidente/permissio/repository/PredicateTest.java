@@ -352,13 +352,13 @@ class PredicateTest {
                       .addPermission(
                           "office:read",
                           new AccessByRelatedEntityRestriction(
-                              "members", new AccessByCreatorRestriction("creator")))
+                              "office:members", new AccessByCreatorRestriction("creator")))
                       .build())
               .permission("office:read")
               .build();
 
       final var users = userRepository.findAllRelated(specification);
-      assertThat(users).hasSize(1);
+      assertThat(users).hasSize(0);
     }
   }
 }
