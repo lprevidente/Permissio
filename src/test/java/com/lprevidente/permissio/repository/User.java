@@ -10,7 +10,7 @@ import org.springframework.lang.Nullable;
 
 @Entity
 @Table(name = "users")
-public class User implements BaseEntity<Long>, Creatable, Handlers {
+public class User implements BaseEntity<Long>, Creatable<Long>, Handlers<Long> {
 
   @Id private Long id;
 
@@ -29,8 +29,8 @@ public class User implements BaseEntity<Long>, Creatable, Handlers {
   private List<TeamMember> teams;
 
   @Override
-  public long getCreatorId() {
-    if (creator == null) return -1;
+  public Long getCreatorId() {
+    if (creator == null) return -1L;
     return creator.getId();
   }
 

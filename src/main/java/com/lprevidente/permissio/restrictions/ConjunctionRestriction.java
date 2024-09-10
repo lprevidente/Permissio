@@ -6,16 +6,16 @@ import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
 import java.util.Map;
 
-public class ConjunctionRestriction implements Restriction<Object> {
+public class ConjunctionRestriction implements Restriction<Object, Requester<?>> {
 
   @Override
-  public boolean isSatisfiedBy(Requester requester, Object baseEntity) {
+  public boolean isSatisfiedBy(Requester<?> requester, Object baseEntity) {
     return true;
   }
 
   @Override
   public Predicate toPredicate(
-      Requester requester, Path<?> path, CriteriaBuilder cb, Map<String, Join<?, ?>> join) {
+      Requester<?> requester, Path<?> path, CriteriaBuilder cb, Map<String, Join<?, ?>> join) {
     return cb.conjunction();
   }
 }

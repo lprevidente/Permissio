@@ -9,10 +9,10 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "products")
-public class Product implements BaseEntity<String>, Creatable {
+public class Product implements BaseEntity<String>, Creatable<Long> {
   @Id private String id;
 
-  private long creatorId;
+  private Long creatorId;
 
   @Override
   public String getId() {
@@ -20,7 +20,7 @@ public class Product implements BaseEntity<String>, Creatable {
   }
 
   @Override
-  public long getCreatorId() {
+  public Long getCreatorId() {
     return creatorId;
   }
 

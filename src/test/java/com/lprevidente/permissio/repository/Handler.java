@@ -19,7 +19,7 @@ class HandlerId implements Serializable {
     this.type = type;
   }
 
-  public long getId() {
+  public Long getId() {
     return id;
   }
 
@@ -57,9 +57,9 @@ class HandlerId implements Serializable {
 @Entity
 @Table(name = "handlers")
 @IdClass(HandlerId.class)
-public class Handler implements HandlerEntity {
+public class Handler implements HandlerEntity<Long> {
 
-  @Id private long id;
+  @Id private Long id;
 
   @Id private String type;
 
@@ -74,7 +74,7 @@ public class Handler implements HandlerEntity {
   private User user;
 
   @Override
-  public long getHandlerId() {
+  public Long getHandlerId() {
     return id;
   }
 

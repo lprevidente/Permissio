@@ -11,12 +11,12 @@ import org.springframework.lang.Nullable;
 
 @Entity
 @Table(name = "offices")
-public class Office implements BaseEntity<Long>, Group<User>, Creatable, HandlerEntity {
+public class Office implements BaseEntity<Long>, Group<User>, Creatable<Long>, HandlerEntity<Long> {
   @Id private Long id;
 
   private String name;
 
-  private long creatorId;
+  private Long creatorId;
 
   @OneToMany(mappedBy = "office")
   private List<User> members;
@@ -43,12 +43,12 @@ public class Office implements BaseEntity<Long>, Group<User>, Creatable, Handler
   }
 
   @Override
-  public long getCreatorId() {
+  public Long getCreatorId() {
     return creatorId;
   }
 
   @Override
-  public long getHandlerId() {
+  public Long getHandlerId() {
     return handler != null ? handler.getId() : -1;
   }
 

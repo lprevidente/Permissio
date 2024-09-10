@@ -7,11 +7,11 @@ import com.lprevidente.permissio.entity.HandlerEntity;
 import java.util.Collection;
 import java.util.List;
 
-public class MockUser implements BaseEntity<Long>, Creatable, Handlers {
+public class MockUser implements BaseEntity<Long>, Creatable<Long>, Handlers<Long> {
 
   @Override
-  public long getCreatorId() {
-    return 0;
+  public Long getCreatorId() {
+    return 0L;
   }
 
   @Override

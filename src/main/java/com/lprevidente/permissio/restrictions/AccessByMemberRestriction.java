@@ -12,7 +12,7 @@ import java.util.Map;
 import org.springframework.util.Assert;
 
 public class AccessByMemberRestriction<T extends BaseEntity<?>> extends Traversable
-    implements Restriction<Group<T>> {
+    implements Restriction<Group<T>, Requester<?>> {
 
   public AccessByMemberRestriction() {
     super("members");
@@ -25,13 +25,13 @@ public class AccessByMemberRestriction<T extends BaseEntity<?>> extends Traversa
   }
 
   @Override
-  public boolean isSatisfiedBy(Requester requester, Group<T> obj) {
+  public boolean isSatisfiedBy(Requester<?> requester, Group<T> obj) {
     return obj.getMembers().stream().map(BaseEntity::getId).anyMatch(id -> id == requester.getId());
   }
 
   @Override
   public Predicate toPredicate(
-      Requester requester,
+      Requester<?> requester,
       Path<? extends Group<T>> path,
       CriteriaBuilder cb,
       Map<String, Join<?, ?>> join) {

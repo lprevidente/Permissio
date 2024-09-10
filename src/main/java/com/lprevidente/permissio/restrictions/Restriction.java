@@ -15,19 +15,18 @@ import java.util.Map;
   @JsonSubTypes.Type(value = AccessByHandlerRestriction.class, name = "accessByHandler"),
   @JsonSubTypes.Type(value = AccessByCreatorRestriction.class, name = "accessByCreator"),
   @JsonSubTypes.Type(value = AccessByMemberRestriction.class, name = "accessByMember"),
-  @JsonSubTypes.Type(value = AccessByRelatedEntityRestriction.class, name = "accessByRelatedEntity"),
+  @JsonSubTypes.Type(
+      value = AccessByRelatedEntityRestriction.class,
+      name = "accessByRelatedEntity"),
   @JsonSubTypes.Type(value = AndRestriction.class, name = "and"),
   @JsonSubTypes.Type(value = OrRestriction.class, name = "or"),
   @JsonSubTypes.Type(value = ConjunctionRestriction.class, name = "*"),
   @JsonSubTypes.Type(value = DisjunctionRestriction.class, name = "-")
 })
-public interface Restriction<T> {
+public interface Restriction<T, R extends Requester<?>> {
 
-  boolean isSatisfiedBy(Requester requester, T obj);
+  boolean isSatisfiedBy(R requester, T obj);
 
   Predicate toPredicate(
-      Requester requester,
-      Path<? extends T> path,
-      CriteriaBuilder cb,
-      Map<String, Join<?, ?>> joinMap);
+      R requester, Path<? extends T> path, CriteriaBuilder cb, Map<String, Join<?, ?>> joinMap);
 }

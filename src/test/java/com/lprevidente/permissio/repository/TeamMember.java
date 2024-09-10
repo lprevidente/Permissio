@@ -9,29 +9,29 @@ import org.hibernate.annotations.OnDeleteAction;
 @Embeddable
 class TeamMemberId {
 
-  private long teamId;
-  private long memberId;
+  private Long teamId;
+  private Long memberId;
 
   public TeamMemberId() {}
 
-  public TeamMemberId(long teamId, long memberId) {
+  public TeamMemberId(Long teamId, Long memberId) {
     this.teamId = teamId;
     this.memberId = memberId;
   }
 
-  public long getTeamId() {
+  public Long getTeamId() {
     return teamId;
   }
 
-  public void setTeamId(long teamId) {
+  public void setTeamId(Long teamId) {
     this.teamId = teamId;
   }
 
-  public long getMemberId() {
+  public Long getMemberId() {
     return memberId;
   }
 
-  public void setMemberId(long memberId) {
+  public void setMemberId(Long memberId) {
     this.memberId = memberId;
   }
 
@@ -56,7 +56,7 @@ class TeamMemberId {
 
 @Entity
 @Table(name = "team_members")
-public class TeamMember implements HandlerEntity {
+public class TeamMember implements HandlerEntity<Long> {
 
   @EmbeddedId private TeamMemberId id;
 
@@ -84,7 +84,7 @@ public class TeamMember implements HandlerEntity {
   }
 
   @Override
-  public long getHandlerId() {
+  public Long getHandlerId() {
     return member.getId();
   }
 
