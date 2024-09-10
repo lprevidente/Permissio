@@ -11,7 +11,8 @@ import java.util.Map;
 import java.util.stream.StreamSupport;
 import org.springframework.util.Assert;
 
-public class AccessByRelatedEntityRestriction extends Traversable implements Restriction<Object> {
+public class AccessByRelatedEntityRestriction extends Traversable
+    implements Restriction<Object, Requester<?>> {
 
   private final Restriction restriction;
 
@@ -30,7 +31,7 @@ public class AccessByRelatedEntityRestriction extends Traversable implements Res
   }
 
   @Override
-  public boolean isSatisfiedBy(Requester requester, Object baseEntity) {
+  public boolean isSatisfiedBy(Requester<?> requester, Object baseEntity) {
     final var res = getRelatedEntity(baseEntity, fields.get(0));
 
     if (res instanceof Iterable<?> iterable) {
@@ -61,7 +62,7 @@ public class AccessByRelatedEntityRestriction extends Traversable implements Res
 
   @Override
   public Predicate toPredicate(
-      Requester requester, Path<?> path, CriteriaBuilder cb, Map<String, Join<?, ?>> join) {
+      Requester<?> requester, Path<?> path, CriteriaBuilder cb, Map<String, Join<?, ?>> join) {
     final var lastPath = joinLastPath(path, join);
     return restriction.toPredicate(requester, lastPath, cb, join);
   }

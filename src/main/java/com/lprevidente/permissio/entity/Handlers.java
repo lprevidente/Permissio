@@ -2,7 +2,7 @@ package com.lprevidente.permissio.entity;
 
 import java.util.Collection;
 
-public interface Handlers {
+public interface Handlers<ID> {
 
-  <T extends HandlerEntity> Collection<T> getHandlers();
+  <T extends HandlerEntity<ID>> Collection<T> getHandlers();
 }

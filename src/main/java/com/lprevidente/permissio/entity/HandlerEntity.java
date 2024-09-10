@@ -1,8 +1,8 @@
 package com.lprevidente.permissio.entity;
 
-public interface HandlerEntity {
+public interface HandlerEntity<ID> {
 
-  long getHandlerId();
+  ID getHandlerId();
 
   String getType();
 }

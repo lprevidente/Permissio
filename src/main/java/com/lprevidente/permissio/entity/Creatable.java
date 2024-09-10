@@ -1,6 +1,6 @@
 package com.lprevidente.permissio.entity;
 
-public interface Creatable {
+public interface Creatable<ID> {
 
-  long getCreatorId();
+  ID getCreatorId();
 }

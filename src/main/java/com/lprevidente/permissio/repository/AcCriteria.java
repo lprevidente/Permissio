@@ -14,10 +14,10 @@ import java.util.List;
 import org.springframework.util.Assert;
 
 public class AcCriteria {
-  private final Requester requester;
+  private final Requester<?> requester;
   private final List<String> permissions;
 
-  private AcCriteria(Requester requester, List<String> permissions) {
+  private AcCriteria(Requester<?> requester, List<String> permissions) {
     Assert.notNull(requester, "The requester cannot be null");
     this.permissions = permissions;
     this.requester = requester;
@@ -31,7 +31,7 @@ public class AcCriteria {
     return permissions;
   }
 
-  public Requester getRequester() {
+  public Requester<?> getRequester() {
     return requester;
   }
 
@@ -60,11 +60,11 @@ public class AcCriteria {
 
   public static class AcCriteriaBuilder {
     private final List<String> permissions = new ArrayList<>();
-    private Requester requester;
+    private Requester<?> requester;
 
     private AcCriteriaBuilder() {}
 
-    public AcCriteriaBuilder request(Requester userPrincipal) {
+    public AcCriteriaBuilder request(Requester<?> userPrincipal) {
       this.requester = userPrincipal;
       return this;
     }

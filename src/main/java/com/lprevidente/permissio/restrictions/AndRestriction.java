@@ -9,7 +9,7 @@ import jakarta.persistence.criteria.Predicate;
 import java.util.Arrays;
 import java.util.Map;
 
-public class AndRestriction implements Restriction<Object> {
+public class AndRestriction implements Restriction<Object, Requester<?>> {
 
   private final Restriction[] restrictions;
 
@@ -23,14 +23,14 @@ public class AndRestriction implements Restriction<Object> {
   }
 
   @Override
-  public boolean isSatisfiedBy(Requester requester, Object baseEntity) {
+  public boolean isSatisfiedBy(Requester<?> requester, Object baseEntity) {
     return Arrays.stream(restrictions)
         .allMatch(restriction -> restriction.isSatisfiedBy(requester, baseEntity));
   }
 
   @Override
   public Predicate toPredicate(
-      Requester requester, Path<?> path, CriteriaBuilder cb, Map<String, Join<?, ?>> join) {
+      Requester<?> requester, Path<?> path, CriteriaBuilder cb, Map<String, Join<?, ?>> join) {
     return Arrays.stream(restrictions)
         .map(restriction -> restriction.toPredicate(requester, path, cb, join))
         .reduce(cb::and)
