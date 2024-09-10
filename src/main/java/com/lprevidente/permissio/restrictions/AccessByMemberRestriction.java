@@ -36,7 +36,8 @@ public class AccessByMemberRestriction<T extends BaseEntity<?>> extends Traversa
       CriteriaBuilder cb,
       Map<String, Join<?, ?>> join) {
     final var lastPath = getLastPath(path, join);
-    if (lastPath.getJavaType() == Long.class) return cb.equal(lastPath, requester.getId());
+    if (lastPath.getJavaType() == requester.getId().getClass())
+      return cb.equal(lastPath, requester.getId());
 
     return cb.equal(lastPath.get("id"), requester.getId());
   }

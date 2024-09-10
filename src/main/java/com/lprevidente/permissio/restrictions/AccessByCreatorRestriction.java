@@ -35,7 +35,7 @@ public class AccessByCreatorRestriction<RequesterId> extends Traversable
     final var fieldPath = path.get(fields.getFirst());
     final var returnType = fieldPath.getJavaType();
 
-    if (fields.size() == 1 && returnType == Long.class)
+    if (fields.size() == 1 && returnType == requester.getId().getClass())
       return cb.equal(fieldPath, requester.getId());
 
     final var lastField = fields.size() > 1 ? fields.get(1) : "id";

@@ -55,7 +55,7 @@ public class AccessByHandlersRestriction<RequesterId> extends Traversable
 
     final var lastPath = getLastPath(path, join);
 
-    if (lastPath.getJavaType() == Long.class) {
+    if (lastPath.getJavaType() == requester.getId().getClass()) {
       if ("*".equals(type)) return cb.equal(lastPath, requester.getId());
 
       final var expType = getLastPath(path, join, typeArray());
