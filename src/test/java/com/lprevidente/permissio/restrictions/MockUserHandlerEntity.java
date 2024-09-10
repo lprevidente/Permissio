@@ -2,7 +2,7 @@ package com.lprevidente.permissio.restrictions;
 
 import com.lprevidente.permissio.entity.HandlerEntity;
 
-public class MockUserHandlerEntity implements HandlerEntity<Long> {
+public class MockUserHandlerEntity implements HandlerEntity<Long, String> {
 
   @Override
   public String getType() {

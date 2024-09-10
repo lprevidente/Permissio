@@ -57,7 +57,7 @@ class HandlerId implements Serializable {
 @Entity
 @Table(name = "handlers")
 @IdClass(HandlerId.class)
-public class Handler implements HandlerEntity<Long> {
+public class Handler implements HandlerEntity<Long, String> {
 
   @Id private Long id;
 

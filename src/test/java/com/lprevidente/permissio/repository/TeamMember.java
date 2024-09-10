@@ -56,7 +56,7 @@ class TeamMemberId {
 
 @Entity
 @Table(name = "team_members")
-public class TeamMember implements HandlerEntity<Long> {
+public class TeamMember implements HandlerEntity<Long, String> {
 
   @EmbeddedId private TeamMemberId id;
 

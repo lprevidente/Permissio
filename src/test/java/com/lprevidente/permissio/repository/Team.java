@@ -10,7 +10,7 @@ import org.hibernate.annotations.Where;
 
 @Entity
 @Table(name = "teams")
-public class Team implements BaseEntity<Long>, Group<User>, Handlers {
+public class Team implements BaseEntity<Long>, Group<User>, Handlers<Long> {
 
   @Id private long id;
 

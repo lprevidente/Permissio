@@ -12,8 +12,8 @@ import java.util.List;
 import java.util.Map;
 import org.springframework.util.Assert;
 
-public class AccessByHandlerRestriction<RequesterId> extends Traversable
-    implements Restriction<HandlerEntity<RequesterId>, Requester<RequesterId>> {
+public class AccessByHandlerRestriction<RequesterId, TypeId> extends Traversable
+    implements Restriction<HandlerEntity<RequesterId, TypeId>, Requester<RequesterId>> {
   private final String type;
 
   public AccessByHandlerRestriction() {
@@ -39,7 +39,7 @@ public class AccessByHandlerRestriction<RequesterId> extends Traversable
 
   @Override
   public boolean isSatisfiedBy(
-      Requester<RequesterId> requester, HandlerEntity<RequesterId> entity) {
+      Requester<RequesterId> requester, HandlerEntity<RequesterId, TypeId> entity) {
     return ("*".equals(type) || entity.getType().equals(type))
         && entity.getHandlerId().equals(requester.getId());
   }
@@ -47,7 +47,7 @@ public class AccessByHandlerRestriction<RequesterId> extends Traversable
   @Override
   public Predicate toPredicate(
       Requester<RequesterId> requester,
-      Path<? extends HandlerEntity<RequesterId>> path,
+      Path<? extends HandlerEntity<RequesterId, TypeId>> path,
       CriteriaBuilder cb,
       Map<String, Join<?, ?>> join) {
     final var lastPath = getLastPath(path, join);

@@ -1,7 +1,6 @@
 package com.lprevidente.permissio.entity;
 
+public interface Handler<HandlerId> {
 
-public interface Handler<ID> {
-
-  <T extends HandlerEntity<ID>> T getHandler();
+  <T extends HandlerEntity<HandlerId, ?>> T getHandler();
 }
