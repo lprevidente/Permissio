@@ -66,7 +66,10 @@ public class AcRepositoryImpl<T extends BaseEntity<ID>, ID> extends SimpleJpaRep
   @Override
   public Optional<T> findById(ID id, AcCriteria acCriteria, String entityGraph) {
     Assert.notNull(id, ID_MUST_NOT_BE_NULL);
-    return findBy(acCriteria, null, entityGraph);
+    return findBy(
+        acCriteria,
+        (root, query, cb) -> cb.equal(root.get(entityInformation.getIdAttribute()), id),
+        entityGraph);
   }
 
   @Override
