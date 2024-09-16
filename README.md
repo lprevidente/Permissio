@@ -70,7 +70,7 @@ You can create your own custom restrictions by implementing the `Restriction` in
 1. **Implement the `Restriction` Interface**:
 
    ```java
-   package com.lprevidente.permissio.restrictions;
+   package com.lprevidente.permissio.restriction;
 
    import jakarta.persistence.criteria.CriteriaBuilder;
    import jakarta.persistence.criteria.Join;
@@ -96,21 +96,21 @@ You can create your own custom restrictions by implementing the `Restriction` in
 
    ```java
     import com.fasterxml.jackson.databind.ObjectMapper;
-    import com.fasterxml.jackson.databind.jsontype.NamedType;
-    import com.lprevidente.permissio.restrictions.CustomRestriction;
-    import org.springframework.context.annotation.Bean;
-    import org.springframework.context.annotation.Configuration;
-    
-    @Configuration
-    public class JacksonConfig {
-    
-      @Bean
-      public ObjectMapper objectMapper() {
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.registerSubtypes(new NamedType(CustomRestriction.class, "customRestriction"));
-        return objectMapper;
-      }
-    }
+import com.fasterxml.jackson.databind.jsontype.NamedType;
+import com.lprevidente.permissio.restriction.CustomRestriction;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+public class JacksonConfig {
+
+  @Bean
+  public ObjectMapper objectMapper() {
+    ObjectMapper objectMapper = new ObjectMapper();
+    objectMapper.registerSubtypes(new NamedType(CustomRestriction.class, "customRestriction"));
+    return objectMapper;
+  }
+}
 ```
 By following these steps, you can extend the restriction functionality and ensure that your custom restrictions are properly serialized and deserialized by Jackson.
 

@@ -1,4 +1,4 @@
-package com.lprevidente.permissio.restrictions;
+package com.lprevidente.permissio.restriction;
 
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Join;

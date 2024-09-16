@@ -1,9 +1,9 @@
 package com.lprevidente.permissio.repository;
 
-import com.lprevidente.permissio.restrictions.AccessByRelatedEntityRestriction;
-import com.lprevidente.permissio.restrictions.ConjunctionRestriction;
-import com.lprevidente.permissio.restrictions.DisjunctionRestriction;
-import com.lprevidente.permissio.restrictions.Requester;
+import com.lprevidente.permissio.restriction.AccessByRelatedEntityRestriction;
+import com.lprevidente.permissio.restriction.ConjunctionRestriction;
+import com.lprevidente.permissio.restriction.DisjunctionRestriction;
+import com.lprevidente.permissio.restriction.Requester;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Path;
@@ -64,8 +64,8 @@ public class AcCriteria {
 
     private AcCriteriaBuilder() {}
 
-    public AcCriteriaBuilder request(Requester<?> userPrincipal) {
-      this.requester = userPrincipal;
+    public AcCriteriaBuilder request(Requester<?> requester) {
+      this.requester = requester;
       return this;
     }
 

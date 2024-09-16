@@ -1,4 +1,4 @@
-package com.lprevidente.permissio.restrictions;
+package com.lprevidente.permissio.restriction;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

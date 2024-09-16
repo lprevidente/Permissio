@@ -3,7 +3,7 @@ package com.lprevidente.permissio.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD;
 
-import com.lprevidente.permissio.restrictions.*;
+import com.lprevidente.permissio.restriction.*;
 import java.util.Map;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;

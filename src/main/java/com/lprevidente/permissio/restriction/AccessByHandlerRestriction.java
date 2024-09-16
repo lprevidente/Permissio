@@ -1,4 +1,4 @@
-package com.lprevidente.permissio.restrictions;
+package com.lprevidente.permissio.restriction;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
