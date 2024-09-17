@@ -227,7 +227,7 @@ public class AcRepositoryImpl<T extends BaseEntity<ID>, ID> extends SimpleJpaRep
     Assert.notNull(query, "CriteriaQuery must not be null");
 
     final var typedQuery = em.createQuery(query);
-    if (entityGraph != null) return typedQuery.setHint(FETCH, entityGraph);
+    if (entityGraph != null) return typedQuery.setHint(FETCH, em.getEntityGraph(entityGraph));
 
     return typedQuery;
   }
