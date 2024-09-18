@@ -19,19 +19,29 @@ public interface AcRepository<T extends BaseEntity<ID>, ID>
 
   EntityManager getEntityManager();
 
-  Optional<T> findBy(AcCriteria acCriteria);
+  /* Find By */
 
-  Optional<T> findBy(AcCriteria acCriteria, Specification<T> specification);
+  Optional<T> findOne(AcCriteria acCriteria, Specification<T> specification);
 
-  Optional<T> findBy(AcCriteria acCriteria, Specification<T> specification, String entityGraph);
+  Optional<T> findOne(AcCriteria acCriteria, Specification<T> specification, String entityGraph);
+
+  /* Find By ID */
+
+  Optional<T> findById(ID id, String entityGraph);
 
   Optional<T> findById(ID id, AcCriteria acCriteria);
 
   Optional<T> findById(ID id, AcCriteria acCriteria, String entityGraph);
 
+  /* Find All */
+
   List<T> findAll(AcCriteria acCriteria);
 
   List<T> findAll(AcCriteria acCriteria, String entityGraph);
+
+  List<T> findAll(AcCriteria acCriteria, Sort sort);
+
+  List<T> findAll(AcCriteria acCriteria, Sort sort, String entityGraph);
 
   List<T> findAll(AcCriteria acCriteria, Specification<T> specification);
 
@@ -39,9 +49,9 @@ public interface AcRepository<T extends BaseEntity<ID>, ID>
 
   List<T> findAll(AcCriteria acCriteria, Specification<T> specification, Sort sort, String entityGraph);
 
-  List<T> findAll(AcCriteria acCriteria, Sort sort);
+  List<T> findAll(Specification<T> specification, Sort sort, String entityGraph);
 
-  List<T> findAll(AcCriteria acCriteria, Sort sort, String entityGraph);
+  /* Find All Page */
 
   Page<T> findAll(AcCriteria acCriteria, Pageable pageable);
 
@@ -51,11 +61,27 @@ public interface AcRepository<T extends BaseEntity<ID>, ID>
 
   Page<T> findAll(AcCriteria acCriteria, Specification<T> specification, Pageable pageable, String entityGraph);
 
+  /* Fina All By ID */
+
+  List<T> findAllById(Collection<ID> ids, String entityGraph);
+
   List<T> findAllById(Collection<ID> ids, AcCriteria acCriteria);
 
   List<T> findAllById(Collection<ID> ids, AcCriteria acCriteria, Sort sort);
 
   List<T> findAllById(Collection<ID> ids, AcCriteria acCriteria, Sort sort, String entityGraph);
+
+  boolean existsById(ID id, AcCriteria acCriteria);
+
+  Map<ID, Boolean> existsById(Collection<ID> ids, AcCriteria acCriteria);
+
+  /* Related */
+
+  Optional<T> findByIdRelated(ID id, AcCriteria acCriteria);
+
+  Optional<T> findByIdRelated(ID id, AcCriteria acCriteria, String entityGraph);
+
+  List<ID> findAllIdRelated(AcCriteria criteria);
 
   List<T> findAllRelated(AcCriteria acCriteria);
 
@@ -63,7 +89,9 @@ public interface AcRepository<T extends BaseEntity<ID>, ID>
 
   List<T> findAllRelated(AcCriteria acCriteria, Sort sort, String entityGraph);
 
-  boolean existsById(ID id, AcCriteria acCriteria);
+  List<T> findAllRelatedById(Collection<ID> ids, AcCriteria acCriteria);
 
-  Map<ID, Boolean> existsById(Collection<ID> ids, AcCriteria acCriteria);
+  List<T> findAllRelatedById(Collection<ID> ids, AcCriteria acCriteria, Sort sort);
+
+  List<T> findAllRelatedById(Collection<ID> ids, AcCriteria acCriteria, Sort sort, String entityGraph);
 }

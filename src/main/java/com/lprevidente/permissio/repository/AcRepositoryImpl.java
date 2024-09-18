@@ -27,7 +27,6 @@ public class AcRepositoryImpl<T extends BaseEntity<ID>, ID> extends SimpleJpaRep
   private static final String ID_MUST_NOT_BE_NULL = "The given id must not be null";
 
   private final EntityManager em;
-  private final Class<T> clazz;
   private final Class<ID> idClazz;
   private final JpaEntityInformation<T, ?> entityInformation;
 
@@ -35,7 +34,6 @@ public class AcRepositoryImpl<T extends BaseEntity<ID>, ID> extends SimpleJpaRep
     super(entityInformation, em);
     this.entityInformation = entityInformation;
     this.em = em;
-    this.clazz = entityInformation.getJavaType();
     this.idClazz = entityInformation.getIdType();
   }
 
@@ -44,18 +42,23 @@ public class AcRepositoryImpl<T extends BaseEntity<ID>, ID> extends SimpleJpaRep
   }
 
   @Override
-  public Optional<T> findBy(AcCriteria acCriteria) {
-    return findBy(acCriteria, null);
+  public Optional<T> findOne(AcCriteria acCriteria, Specification<T> spec) {
+    return findOne(acCriteria, spec, null);
   }
 
   @Override
-  public Optional<T> findBy(AcCriteria acCriteria, Specification<T> spec) {
-    return findBy(acCriteria, spec, null);
-  }
-
-  @Override
-  public Optional<T> findBy(AcCriteria acCriteria, Specification<T> spec, String entityGraph) {
+  public Optional<T> findOne(
+      @Nullable AcCriteria acCriteria, @Nullable Specification<T> spec, String entityGraph) {
     return getQuery(spec, acCriteria, Sort.unsorted(), entityGraph).getResultStream().findFirst();
+  }
+
+  @Override
+  public Optional<T> findById(ID id, String entityGraph) {
+    Assert.notNull(id, ID_MUST_NOT_BE_NULL);
+    return findOne(
+        null,
+        (root, query, cb) -> cb.equal(root.get(entityInformation.getIdAttribute()), id),
+        entityGraph);
   }
 
   @Override
@@ -66,7 +69,7 @@ public class AcRepositoryImpl<T extends BaseEntity<ID>, ID> extends SimpleJpaRep
   @Override
   public Optional<T> findById(ID id, AcCriteria acCriteria, String entityGraph) {
     Assert.notNull(id, ID_MUST_NOT_BE_NULL);
-    return findBy(
+    return findOne(
         acCriteria,
         (root, query, cb) -> cb.equal(root.get(entityInformation.getIdAttribute()), id),
         entityGraph);
@@ -98,6 +101,11 @@ public class AcRepositoryImpl<T extends BaseEntity<ID>, ID> extends SimpleJpaRep
     return getQuery(specification, acCriteria, sort, entityGraph).getResultList();
   }
 
+  @Override
+  public List<T> findAll(Specification<T> specification, Sort sort, String entityGraph) {
+    return findAll(null, specification, sort, entityGraph);
+  }
+
   public List<T> findAll(AcCriteria acCriteria, Sort sort) {
     return findAll(acCriteria, sort, null);
   }
@@ -123,21 +131,26 @@ public class AcRepositoryImpl<T extends BaseEntity<ID>, ID> extends SimpleJpaRep
 
   @Override
   public Page<T> findAll(
-      AcCriteria acCriteria,
-      Specification<T> specification,
+      @Nullable AcCriteria acCriteria,
+      @Nullable Specification<T> specification,
       Pageable pageable,
       String entityGraph) {
 
     if (pageable.isUnpaged()) return new PageImpl<>(findAll(acCriteria));
 
     final var cb = em.getCriteriaBuilder();
-    final var cq = cb.createQuery(clazz);
+    final var cq = cb.createQuery(getDomainClass());
 
     applySpecificationToCriteria(specification, cq, acCriteria);
 
     final var typedQuery = applyEntityGraph(cq, entityGraph);
 
     return readPage(typedQuery, getDomainClass(), pageable, null);
+  }
+
+  @Override
+  public List<T> findAllById(Collection<ID> ids, String entityGraph) {
+    return findAllById(ids, null, Sort.unsorted(), entityGraph);
   }
 
   @Override
@@ -162,6 +175,43 @@ public class AcRepositoryImpl<T extends BaseEntity<ID>, ID> extends SimpleJpaRep
   }
 
   @Override
+  public Optional<T> findByIdRelated(ID id, AcCriteria acCriteria) {
+    final var tq =
+        getQuery(
+            (root, cq, cb) ->
+                cb.and(
+                    cb.equal(root.get(entityInformation.getIdAttribute()), id),
+                    acCriteria.getPredicateRelated(root, cb)),
+            Sort.unsorted());
+    return tq.getResultStream().findFirst();
+  }
+
+  @Override
+  public Optional<T> findByIdRelated(ID id, AcCriteria acCriteria, String entityGraph) {
+    final var tq =
+        getQuery(
+            (root, cq, cb) ->
+                cb.and(
+                    cb.equal(root.get(entityInformation.getIdAttribute()), id),
+                    acCriteria.getPredicateRelated(root, cb)),
+            null,
+            Sort.unsorted(),
+            entityGraph);
+    return tq.getResultStream().findFirst();
+  }
+
+  @Override
+  public List<ID> findAllIdRelated(AcCriteria criteria) {
+    final var cb = em.getCriteriaBuilder();
+    final var cq = cb.createQuery(idClazz);
+    final var root = cq.from(getDomainClass());
+
+    cq.where(criteria.toPredicate(root, cb)).select(root.get("id")).distinct(true);
+
+    return em.createQuery(cq).getResultList();
+  }
+
+  @Override
   public List<T> findAllRelated(AcCriteria acCriteria) {
     return findAllRelated(acCriteria, Sort.unsorted());
   }
@@ -173,8 +223,33 @@ public class AcRepositoryImpl<T extends BaseEntity<ID>, ID> extends SimpleJpaRep
 
   @Override
   public List<T> findAllRelated(AcCriteria acCriteria, Sort sort, String entityGraph) {
-    return findAll(
-        acCriteria, (root, cq, cb) -> acCriteria.getPredicateRelated(root, cb), sort, entityGraph);
+    final var tq = getQuery((root, cq, cb) -> acCriteria.getPredicateRelated(root, cb), sort);
+    if (entityGraph != null) tq.setHint(FETCH, em.getEntityGraph(entityGraph));
+    return tq.getResultList();
+  }
+
+  @Override
+  public List<T> findAllRelatedById(Collection<ID> ids, AcCriteria acCriteria) {
+    return findAllRelatedById(ids, acCriteria, Sort.unsorted());
+  }
+
+  @Override
+  public List<T> findAllRelatedById(Collection<ID> ids, AcCriteria acCriteria, Sort sort) {
+    return findAllRelatedById(ids, acCriteria, sort, null);
+  }
+
+  @Override
+  public List<T> findAllRelatedById(
+      Collection<ID> ids, AcCriteria acCriteria, Sort sort, String entityGraph) {
+    final var tq =
+        getQuery(
+            (root, cq, cb) ->
+                cb.and(
+                    root.get(entityInformation.getIdAttribute()).in(ids),
+                    acCriteria.getPredicateRelated(root, cb)),
+            sort);
+    if (entityGraph != null) tq.setHint(FETCH, em.getEntityGraph(entityGraph));
+    return tq.getResultList();
   }
 
   @Override
@@ -194,7 +269,7 @@ public class AcRepositoryImpl<T extends BaseEntity<ID>, ID> extends SimpleJpaRep
 
     final var cb = em.getCriteriaBuilder();
     final var cq = cb.createQuery(idClazz);
-    final var root = cq.from(clazz);
+    final var root = cq.from(getDomainClass());
 
     final var predicate =
         cb.and(
@@ -209,9 +284,12 @@ public class AcRepositoryImpl<T extends BaseEntity<ID>, ID> extends SimpleJpaRep
   }
 
   private TypedQuery<T> getQuery(
-      @Nullable Specification<T> spec, AcCriteria acCriteria, Sort sort, String entityGraph) {
+      @Nullable Specification<T> spec,
+      @Nullable AcCriteria acCriteria,
+      Sort sort,
+      String entityGraph) {
     final var builder = em.getCriteriaBuilder();
-    final var query = builder.createQuery(clazz);
+    final var query = builder.createQuery(getDomainClass());
 
     final var root = applySpecificationToCriteria(spec, query, acCriteria);
     query.select(root);
@@ -233,23 +311,17 @@ public class AcRepositoryImpl<T extends BaseEntity<ID>, ID> extends SimpleJpaRep
   }
 
   private Root<T> applySpecificationToCriteria(
-      @Nullable Specification<T> spec, CriteriaQuery<T> query, AcCriteria acCriteria) {
+      @Nullable Specification<T> spec, CriteriaQuery<T> query, @Nullable AcCriteria acCriteria) {
     Assert.notNull(query, "CriteriaQuery must not be null");
-    Assert.notNull(acCriteria, "AcCriteria must not be null");
 
     final var root = query.from(getDomainClass());
     final var cb = em.getCriteriaBuilder();
-    final var acPredicate = acCriteria.toPredicate(root, cb);
+    final var predicates = new ArrayList<Predicate>();
 
-    if (spec == null) {
-      query.distinct(true).where(acPredicate);
-      return root;
-    }
+    if (acCriteria != null) predicates.add(acCriteria.toPredicate(root, cb));
+    if (spec != null) predicates.add(spec.toPredicate(root, query, cb));
 
-    final var specPredicate = spec.toPredicate(root, query, cb);
-    final var predicate = specPredicate != null ? cb.and(acPredicate, specPredicate) : acPredicate;
-
-    query.distinct(true).where(predicate);
+    query.distinct(true).where(cb.and(predicates.toArray(Predicate[]::new)));
 
     return root;
   }
