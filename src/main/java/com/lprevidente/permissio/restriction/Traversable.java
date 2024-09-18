@@ -26,13 +26,28 @@ public abstract class Traversable {
 
   protected From<?, ?> joinLastPath(Path<?> path, Map<String, Join<?, ?>> joinMap) {
     final var penultimatePath = getPenultimatePath(path, joinMap, fields);
-    return penultimatePath.join(fields.getLast(), JoinType.LEFT);
+    final var lastField = fields.getLast();
+    if (joinMap.containsKey(lastField)) return joinMap.get(lastField);
+    final var join = penultimatePath.join(lastField, JoinType.LEFT);
+    joinMap.put(lastField, join);
+    return join;
   }
 
   protected Path<?> getLastPath(
       Path<?> path, Map<String, Join<?, ?>> joinMap, List<String> fields) {
     final var penultimatePath = getPenultimatePath(path, joinMap, fields);
-    return penultimatePath.get(fields.getLast());
+    final var lastField = fields.getLast();
+    final var pathLast = penultimatePath.get(lastField);
+
+    // TODO: generalize this to any type
+    if (pathLast.getJavaType() == Long.class || pathLast.getJavaType() == String.class)
+      return pathLast;
+
+    if (joinMap.containsKey(lastField)) return joinMap.get(lastField);
+
+    final var join = penultimatePath.join(lastField);
+    joinMap.put(lastField, join);
+    return join;
   }
 
   protected Path getLastPath(Path<?> path, Map<String, Join<?, ?>> joinMap) {

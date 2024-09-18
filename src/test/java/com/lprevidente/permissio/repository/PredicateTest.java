@@ -144,7 +144,7 @@ class PredicateTest {
   class AccessByHandler {
 
     @Test
-    void byHandlerRestriction() {
+    void xbyHandlerRestriction() {
       final var restriction = new AccessByHandlersRestriction();
 
       final var specification =
@@ -272,9 +272,9 @@ class PredicateTest {
       final var restriction =
           new OrRestriction(
               new AccessByRelatedEntityRestriction(
-                  "teams:team", new AccessByHandlersRestriction("OP", "handlers:member")),
+                  "teams:team", new AccessByHandlersRestriction("OP", "handlers:member:id")),
               new AccessByRelatedEntityRestriction(
-                  "teams:team", new AccessByHandlersRestriction("*", "handlers:member")));
+                  "teams:team", new AccessByHandlersRestriction("*", "handlers:member:id")));
 
       final var specification =
           AcCriteria.builder()
