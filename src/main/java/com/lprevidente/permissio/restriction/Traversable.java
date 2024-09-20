@@ -27,26 +27,28 @@ public abstract class Traversable {
   protected From<?, ?> joinLastPath(Path<?> path, Map<String, Join<?, ?>> joinMap) {
     final var penultimatePath = getPenultimatePath(path, joinMap, fields);
     final var lastField = fields.getLast();
-    if (joinMap.containsKey(lastField)) return joinMap.get(lastField);
+    final var key = penultimatePath.getModel().toString().concat(".").concat(lastField);
+    if (joinMap.containsKey(key)) return joinMap.get(key);
     final var join = penultimatePath.join(lastField, JoinType.LEFT);
-    joinMap.put(lastField, join);
+    joinMap.put(key, join);
     return join;
   }
 
   protected Path<?> getLastPath(
-      Path<?> path, Map<String, Join<?, ?>> joinMap, List<String> fields) {
+    Path<?> path, Map<String, Join<?, ?>> joinMap, List<String> fields) {
     final var penultimatePath = getPenultimatePath(path, joinMap, fields);
     final var lastField = fields.getLast();
     final var pathLast = penultimatePath.get(lastField);
+    final var key = penultimatePath.getModel().toString().concat(".").concat(lastField);
 
     // TODO: generalize this to any type
     if (pathLast.getJavaType() == Long.class || pathLast.getJavaType() == String.class)
       return pathLast;
 
-    if (joinMap.containsKey(lastField)) return joinMap.get(lastField);
+    if (joinMap.containsKey(key)) return joinMap.get(key);
 
     final var join = penultimatePath.join(lastField);
-    joinMap.put(lastField, join);
+    joinMap.put(key, join);
     return join;
   }
 
@@ -55,7 +57,7 @@ public abstract class Traversable {
   }
 
   protected From<?, ?> getPenultimatePath(
-      Path<?> path, Map<String, Join<?, ?>> joinMap, List<String> fields) {
+    Path<?> path, Map<String, Join<?, ?>> joinMap, List<String> fields) {
 
     // Initialize the current path and join key
     var currentPath = path;
@@ -63,15 +65,16 @@ public abstract class Traversable {
     // Iterate over fields except the last one to handle joins
     for (int i = 0; i < fields.size() - 1; i++) {
       final var field = fields.get(i);
+      final var key = currentPath.getModel().toString().concat(".").concat(field);
 
       // Check if join already exists in the map
-      if (joinMap.containsKey(field)) {
-        currentPath = joinMap.get(field);
+      if (joinMap.containsKey(key)) {
+        currentPath = joinMap.get(key);
       } else {
         // If not, create a new join and add it to the map
         final var from = (From<?, ?>) currentPath;
         final var join = from.join(field, JoinType.LEFT);
-        joinMap.put(field, join);
+        joinMap.put(key, join);
         currentPath = join;
       }
     }
