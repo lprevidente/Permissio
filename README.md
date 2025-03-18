@@ -15,6 +15,7 @@ along with custom JPA repository implementations to handle advanced query lookup
 - **Custom JPA Repository**:
     - Leverages Spring Data JPA with custom repository implementations.
     - Supports dynamic query building with Criteria API and customizable query lookup strategies.
+    - Modular repository interfaces for different query types.
 
 - **JSON Serialization/Deserialization**:
     - Built-in support for serializing and deserializing restrictions using Jackson.
@@ -35,6 +36,7 @@ along with custom JPA repository implementations to handle advanced query lookup
 To use this library, add the following dependency to your `pom.xml`:
 
 ```xml
+
 <dependency>
   <groupId>com.lprevidente</groupId>
   <artifactId>permissio</artifactId>
@@ -61,87 +63,166 @@ Ensure that your Spring Boot application has the necessary configuration to enab
     }
 ```
 
+## Repository Interfaces
+
+The library provides a modular approach with specialized repository interfaces that you can use based on your needs:
+
+### AcRepository
+
+The main repository interface that extends all other interfaces, providing comprehensive access control functionality.
+Use this when you need all features.
+
+```java
+public interface UserRepository extends AcRepository<User, Long> {
+  // Custom methods
+}
+```
+
+### AcRepositorySpecificationExecutor
+
+Specialized interface for repositories that need to execute JPA Specifications with access control criteria.
+
+```java
+public interface ProductRepository
+    extends JpaRepository<Product, Long>, AcRepositorySpecificationExecutor<Product, Long> {
+
+  // Using specifications
+  default List<Product> findActiveProductsByCategory(String category, Requester requester) {
+    AcCriteria criteria = AcCriteria.builder().request(requester).build();
+
+    Specification<Product> spec =
+        (root, query, cb) ->
+            cb.and(cb.equal(root.get("category"), category), cb.equal(root.get("active"), true));
+
+    return findAll(criteria, spec);
+  }
+}
+
+```
+
+### AcRepositoryRelated
+
+Specialized interface for repositories that need to work with related entities and entity graphs.
+
+```java
+public interface TeamRepository
+    extends JpaRepository<Team, Long>, AcRepositoryRelated<Team, Long> {}
+
+```
+
 ## Available Restrictions
 
 The library provides various restriction types to control access to entities:
 
-| Restriction | Description |
-|-------------|-------------|
-| `ById` | Restricts access to an entity based on a specific ID property. |
-| `ByCreator` | Restricts access to entities created by the current requester. |
-| `ByMember` | Restricts access to entities where the requester is a member. |
-| `ByHandler` | Restricts access based on handlers with specific type and ID. |
-| `ByRelatedEntity` | Restricts access based on a related entity's properties. |
-| `And` | Combines multiple restrictions with AND logic. |
-| `Or` | Combines multiple restrictions with OR logic. |
-| `Conjunction` | Represents a specialized conjunction (all conditions must be true). |
-| `Disjunction` | Represents a specialized disjunction (at least one condition must be true). |
+| Restriction       | Description                                                                 |
+|-------------------|-----------------------------------------------------------------------------|
+| `ById`            | Restricts access to an entity based on a specific ID property.              |
+| `ByCreator`       | Restricts access to entities created by the current requester.              |
+| `ByMember`        | Restricts access to entities where the requester is a member.               |
+| `ByHandler`       | Restricts access based on handlers with specific type and ID.               |
+| `ByRelatedEntity` | Restricts access based on a related entity's properties.                    |
+| `And`             | Combines multiple restrictions with AND logic.                              |
+| `Or`              | Combines multiple restrictions with OR logic.                               |
+| `Conjunction`     | Represents a specialized conjunction (all conditions must be true).         |
+| `Disjunction`     | Represents a specialized disjunction (at least one condition must be true). |
 
 ### Restriction Details
 
 #### ById
+
 Restricts access to entities with a specific property value.
+
 ```java
-new ById("id", 1) // Access entity with id = 1
+new ById("id",1) // Access entity with id = 1
 ```
 
 #### ByCreator
+
 Restricts access to entities created by the current requester.
+
 ```java
 new ByCreator("creator.id") // Access entities where creator.id equals requester's ID
-new ByCreator("creatorId")  // Access entities where creatorId equals requester's ID
+new
+
+ByCreator("creatorId")  // Access entities where creatorId equals requester's ID
 ```
 
 #### ByMember
+
 Restricts access to entities where the requester is a member.
+
 ```java
 new ByMember("members.id")      // For one-to-many relationships
-new ByMember("members.user.id") // For custom join relationships
+new
+
+ByMember("members.user.id") // For custom join relationships
 ```
 
 #### ByHandler
+
 Restricts access based on handlers with specific type and ID.
+
 ```java
 // Any handler type where handler.id matches the requester's ID
 new ByHandler(
     new Type("*", "handlers.type"), 
-    new Id("id", "handlers.handler.id")
+    new
+
+Id("id","handlers.handler.id")
 )
 
 // Only HR type handlers where handler.id matches the requester's ID
-new ByHandler(
+    new
+
+ByHandler(
     new Type("HR", "handlers.type"),
-    new Id("id", "handlers.id")
+    new
+
+Id("id","handlers.id")
 )
 ```
 
 #### ByRelatedEntity
+
 Restricts access based on properties of a related entity.
+
 ```java
 // Access users related to office with ID 1
-new ByRelatedEntity("office", new ById("id", 1L))
+new ByRelatedEntity("office",new ById("id", 1L))
 
 // Access users who are members of teams with ID 1
-new ByRelatedEntity("teams.team", new ById("id", 1L))
+    new
+
+ByRelatedEntity("teams.team",new ById("id", 1L))
 ```
 
 #### Composite Restrictions (And/Or)
+
 Combine multiple restrictions with logical operators.
+
 ```java
 // Access entities that match both restrictions
-new And(new ById("id", 2L), new ByCreator("creator.id"))
+new And(new ById("id", 2L), new
+
+ByCreator("creator.id"))
 
 // Access entities that match either restriction
-new Or(new ById("id", 1L), new ByCreator("creator.id"))
+    new
+
+Or(new ById("id", 1L), new
+
+ByCreator("creator.id"))
 ```
 
 ## Serialization
 
-All restrictions can be serialized to and deserialized from JSON, making it easy to store and load access control rules. Jackson is used for JSON processing with type information included in the `@type` property.
+All restrictions can be serialized to and deserialized from JSON, making it easy to store and load access control rules.
+Jackson is used for JSON processing with type information included in the `@type` property.
 
 ### JSON Representation of Restrictions
 
 #### ById
+
 ```json
 {
   "@type": "byId",
@@ -151,6 +232,7 @@ All restrictions can be serialized to and deserialized from JSON, making it easy
 ```
 
 #### ByCreator
+
 ```json
 {
   "@type": "byCreator",
@@ -159,6 +241,7 @@ All restrictions can be serialized to and deserialized from JSON, making it easy
 ```
 
 #### ByMember
+
 ```json
 {
   "@type": "byMember",
@@ -167,6 +250,7 @@ All restrictions can be serialized to and deserialized from JSON, making it easy
 ```
 
 #### ByHandler
+
 ```json
 {
   "@type": "byHandler",
@@ -182,6 +266,7 @@ All restrictions can be serialized to and deserialized from JSON, making it easy
 ```
 
 #### Composite Restrictions (And/Or)
+
 ```json
 {
   "@type": "and",
@@ -200,6 +285,7 @@ All restrictions can be serialized to and deserialized from JSON, making it easy
 ```
 
 #### ByRelatedEntity
+
 ```json
 {
   "@type": "byRelatedEntity",
@@ -235,9 +321,9 @@ Define a requester with permissions and restrictions:
 ```java
 // Create a requester with ID 1 who can read users they created
 Requester<Long> requester = Requester.builder()
-    .id(1L)
-    .addPermission("user:read", new ByCreator("creator.id"))
-    .build();
+        .id(1L)
+        .addPermission("user:read", new ByCreator("creator.id"))
+        .build();
 
 // Build criteria with the requester and permission
 AcCriteria criteria = AcCriteria.builder()
@@ -254,9 +340,9 @@ List<User> users = userRepository.findAll(criteria);
 ```java
 // Create a restriction that allows access to entity with ID 2 only if the requester is also the creator
 Restriction restriction = new And(
-    new ById("id", 2L), 
-    new ByCreator("creator.id")
-);
+        new ById("id", 2L),
+        new ByCreator("creator.id")
+    );
 
 // Apply the restriction to a specific permission
 Requester<Long> requester = new Requester<>(1L, Map.of("user:read", restriction));
@@ -276,12 +362,12 @@ List<User> users = userRepository.findAll(criteria);
 ```java
 // Access users who belong to teams with ID 1 or 2
 Restriction restriction = new ByRelatedEntity(
-    "teams.team",
-    new Or(
-        new ById("id", 1L), 
-        new ById("id", 2L)
-    )
-);
+        "teams.team",
+        new Or(
+            new ById("id", 1L),
+            new ById("id", 2L)
+        )
+    );
 
 // Apply restriction to the "user:read" permission
 Requester<Long> requester = new Requester<>(1L, Map.of("user:read", restriction));
@@ -295,7 +381,9 @@ AcCriteria criteria = AcCriteria.builder()
 List<User> users = userRepository.findAll(criteria);
 ```
 
-See the [examples](https://github.com/lprevidente/Permissio/tree/main/src/test/java/com/lprevidente/permissio/repository) in the test package for more detailed usage scenarios.
+See
+the [examples](https://github.com/lprevidente/Permissio/tree/main/src/test/java/com/lprevidente/permissio/repository) in
+the test package for more detailed usage scenarios.
 
 ### Extending Restrictions
 
