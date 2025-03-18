@@ -6,7 +6,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lprevidente.permissio.repository.EnableAcRepositories;
 import com.lprevidente.permissio.restriction.*;
+import com.lprevidente.permissio.restriction.AccessByHandler.Id;
+import com.lprevidente.permissio.restriction.AccessByHandler.Type;
 import org.assertj.core.api.InstanceOfAssertFactories;
+import org.json.JSONException;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
@@ -23,35 +26,42 @@ class SerializationTest {
   }
 
   @Nested
-  class AccessById {
+  class AccessByIdTest {
     private final String json =
         """
-            {"@type":"accessById","id":1}""";
+            {
+              "@type": "byId",
+              "property": "id",
+              "id": 1
+            }""";
 
     @Test
-    void serialize() throws JsonProcessingException {
-      final var restriction = new AccessByIdRestriction<>(1L);
+    void serialize() throws JsonProcessingException, JSONException {
+      final var restriction = new AccessById("id", 1L);
 
       final var res = mapper.writeValueAsString(restriction);
-      assertThat(res).isEqualTo(json);
+      JSONAssert.assertEquals(json, res, true);
     }
 
     @Test
     void deserialize() throws JsonProcessingException {
       final var restriction = mapper.readValue(json, Restriction.class);
-      assertThat(restriction).isInstanceOf(AccessByIdRestriction.class);
+      assertThat(restriction).isInstanceOf(AccessById.class);
     }
   }
 
   @Nested
-  class AccessByCreator {
+  class AccessByCreatorTest {
     private final String json =
         """
-            {"@type":"accessByCreator","property":"creator"}""";
+            {
+              "@type": "byCreator",
+              "property": "creator"
+            }""";
 
     @Test
     void serialize() throws Exception {
-      final var restriction = new AccessByCreatorRestriction("creator");
+      final var restriction = new AccessByCreator("creator");
 
       final var res = mapper.writeValueAsString(restriction);
       JSONAssert.assertEquals(json, res, true);
@@ -61,21 +71,24 @@ class SerializationTest {
     void deserialize() throws JsonProcessingException {
       final var restriction = mapper.readValue(json, Restriction.class);
       assertThat(restriction)
-          .isInstanceOf(AccessByCreatorRestriction.class)
-          .asInstanceOf(InstanceOfAssertFactories.type(AccessByCreatorRestriction.class))
+          .isInstanceOf(AccessByCreator.class)
+          .asInstanceOf(InstanceOfAssertFactories.type(AccessByCreator.class))
           .hasFieldOrPropertyWithValue("property", "creator");
     }
   }
 
   @Nested
-  class AccessByMember {
+  class AccessByMemberTest {
     private final String json =
         """
-            {"@type":"accessByMember","property":"members:id"}""";
+            {
+              "@type": "byMember",
+              "property": "members.id"
+            }""";
 
     @Test
     void serialize() throws Exception {
-      final var restriction = new AccessByMemberRestriction<>("members:id");
+      final var restriction = new AccessByMember("members.id");
 
       final var res = mapper.writeValueAsString(restriction);
       JSONAssert.assertEquals(json, res, true);
@@ -85,22 +98,33 @@ class SerializationTest {
     void deserialize() throws JsonProcessingException {
       final var restriction = mapper.readValue(json, Restriction.class);
       assertThat(restriction)
-          .isInstanceOf(AccessByMemberRestriction.class)
-          .asInstanceOf(InstanceOfAssertFactories.type(AccessByMemberRestriction.class))
-          .hasFieldOrPropertyWithValue("property", "members:id");
+          .isInstanceOf(AccessByMember.class)
+          .asInstanceOf(InstanceOfAssertFactories.type(AccessByMember.class))
+          .hasFieldOrPropertyWithValue("property", "members.id");
     }
   }
 
   @Nested
-  class AccessByHandler {
+  class AccessByHandlerTest {
 
     private final String json =
         """
-            {"@type":"accessByHandlers","property":"handlers","type":"OP"}""";
+            {
+              "@type": "byHandler",
+              "type": {
+                "type": "*",
+                "property": "handlers.handler"
+              },
+              "id": {
+                "field": "id",
+                "property": "handlers.handler"
+              }
+            }""";
 
     @Test
     void serializeHandler() throws Exception {
-      final var restriction = new AccessByHandlersRestriction("OP", "handlers");
+      final var restriction =
+          new AccessByHandler(new Type("*", "handlers.handler"), new Id("id", "handlers.handler"));
 
       final var res = mapper.writeValueAsString(restriction);
       JSONAssert.assertEquals(json, res, true);
@@ -111,23 +135,36 @@ class SerializationTest {
       final var restriction = mapper.readValue(json, Restriction.class);
 
       assertThat(restriction)
-          .isInstanceOf(AccessByHandlersRestriction.class)
-          .asInstanceOf(InstanceOfAssertFactories.type(AccessByHandlersRestriction.class))
-          .hasFieldOrPropertyWithValue("property", "handlers")
-          .hasFieldOrPropertyWithValue("type", "OP");
+          .isInstanceOf(AccessByHandler.class)
+          .asInstanceOf(InstanceOfAssertFactories.type(AccessByHandler.class))
+          .hasFieldOrPropertyWithValue("id", new Id("id", "handlers.handler"))
+          .hasFieldOrPropertyWithValue("type", new Type("*", "handlers.handler"));
     }
   }
 
   @Nested
-  class And {
+  class AndTest {
     private final String json =
         """
-            {"@type":"and","restrictions":[{"@type":"accessById","id":1},{"@type":"accessById","id":2}]}""";
+            {
+              "@type": "and",
+              "restrictions": [
+                {
+                  "@type": "byId",
+                  "property": "id",
+                  "id": 1
+                },
+                {
+                  "@type": "byId",
+                  "property": "id",
+                  "id": 2
+                }
+              ]
+            }""";
 
     @Test
     void serialize() throws Exception {
-      final var restriction =
-          new AndRestriction(new AccessByIdRestriction<>(1L), new AccessByIdRestriction<>(2L));
+      final var restriction = new And(new AccessById("id", 1L), new AccessById("id", 2L));
 
       final var res = mapper.writeValueAsString(restriction);
       JSONAssert.assertEquals(json, res, true);
@@ -137,24 +174,37 @@ class SerializationTest {
     void deserialize() throws JsonProcessingException {
       final var restriction = mapper.readValue(json, Restriction.class);
       assertThat(restriction)
-          .isInstanceOf(AndRestriction.class)
-          .asInstanceOf(InstanceOfAssertFactories.type(AndRestriction.class))
-          .extracting(AndRestriction::getRestrictions)
+          .isInstanceOf(And.class)
+          .asInstanceOf(InstanceOfAssertFactories.type(And.class))
+          .extracting(And::restrictions)
           .asInstanceOf(InstanceOfAssertFactories.array(Restriction[].class))
           .hasSize(2);
     }
   }
 
   @Nested
-  class Or {
+  class OrTest {
     private final String json =
         """
-            {"@type":"or","restrictions":[{"@type":"accessById","id":1},{"@type":"accessById","id":2}]}""";
+            {
+              "@type": "or",
+              "restrictions": [
+                {
+                  "@type": "byId",
+                  "property": "id",
+                  "id": 1
+                },
+                {
+                  "@type": "byId",
+                  "property": "id",
+                  "id": 2
+                }
+              ]
+            }""";
 
     @Test
     void serialize() throws Exception {
-      final var restriction =
-          new OrRestriction(new AccessByIdRestriction<>(1), new AccessByIdRestriction<>(2));
+      final var restriction = new Or(new AccessById("id", 1), new AccessById("id", 2));
 
       final var res = mapper.writeValueAsString(restriction);
       JSONAssert.assertEquals(json, res, true);
@@ -164,24 +214,31 @@ class SerializationTest {
     void deserialize() throws JsonProcessingException {
       final var restriction = mapper.readValue(json, Restriction.class);
       assertThat(restriction)
-          .isInstanceOf(OrRestriction.class)
-          .asInstanceOf(InstanceOfAssertFactories.type(OrRestriction.class))
-          .extracting(OrRestriction::getRestrictions)
+          .isInstanceOf(Or.class)
+          .asInstanceOf(InstanceOfAssertFactories.type(Or.class))
+          .extracting(Or::restrictions)
           .asInstanceOf(InstanceOfAssertFactories.array(Restriction[].class))
           .hasSize(2);
     }
   }
 
   @Nested
-  class AccessByRelatedEntity {
+  class AccessByRelatedEntityTest {
     private final String json =
         """
-            {"@type":"accessByRelatedEntity","property":"team","restriction":{"@type":"accessById","id":1}}""";
+            {
+              "@type": "byRelatedEntity",
+              "property": "team",
+              "restriction": {
+                "@type": "byId",
+                "property": "id",
+                "id": 1
+              }
+            }""";
 
     @Test
     void serialize() throws Exception {
-      final var restriction =
-          new AccessByRelatedEntityRestriction("team", new AccessByIdRestriction<>(1));
+      final var restriction = new AccessByRelatedEntity("team", new AccessById("id", 1));
 
       final var res = mapper.writeValueAsString(restriction);
       JSONAssert.assertEquals(json, res, true);
@@ -191,11 +248,11 @@ class SerializationTest {
     void deserialize() throws JsonProcessingException {
       final var restriction = mapper.readValue(json, Restriction.class);
       assertThat(restriction)
-          .isInstanceOf(AccessByRelatedEntityRestriction.class)
-          .asInstanceOf(InstanceOfAssertFactories.type(AccessByRelatedEntityRestriction.class))
+          .isInstanceOf(AccessByRelatedEntity.class)
+          .asInstanceOf(InstanceOfAssertFactories.type(AccessByRelatedEntity.class))
           .hasFieldOrPropertyWithValue("property", "team")
-          .extracting(AccessByRelatedEntityRestriction::getRestriction)
-          .asInstanceOf(InstanceOfAssertFactories.type(AccessByIdRestriction.class))
+          .extracting(AccessByRelatedEntity::getRestriction)
+          .asInstanceOf(InstanceOfAssertFactories.type(AccessById.class))
           .hasFieldOrPropertyWithValue("id", 1);
     }
   }

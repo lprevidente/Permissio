@@ -1,7 +1,6 @@
 package com.lprevidente.permissio.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD;
 
 import com.lprevidente.permissio.restriction.*;
 import java.util.List;
@@ -15,14 +14,7 @@ import org.springframework.test.context.jdbc.Sql;
 
 @SpringBootTest
 @EnableAcRepositories(basePackageClasses = {UserRepository.class, OfficeRepository.class})
-@Sql(
-    scripts = {
-      "classpath:users.sql",
-      "classpath:products.sql",
-    })
-@Sql(
-    statements = "DELETE FROM users; DELETE FROM teams; DELETE FROM offices; DELETE FROM products;",
-    executionPhase = AFTER_TEST_METHOD)
+@Sql(scripts = {"classpath:users.sql", "classpath:products.sql"})
 class RepositoryTest {
 
   @Autowired private UserRepository userRepository;
@@ -36,7 +28,7 @@ class RepositoryTest {
     void byIdLong() {
       final var specification =
           AcCriteria.builder()
-              .request(new Requester(1L, Map.of("user:read", new AccessByIdRestriction<>(1))))
+              .request(new Requester<>(1L, Map.of("user:read", new AccessById("id", 1))))
               .permission("user:read")
               .build();
 
@@ -48,8 +40,7 @@ class RepositoryTest {
     void byIdString() {
       final var specification =
           AcCriteria.builder()
-              .request(
-                  new Requester(1L, Map.of("product:read", new AccessByIdRestriction<>("SKU001"))))
+              .request(new Requester<>(1L, Map.of("product:read", new AccessById("id", "SKU001"))))
               .permission("product:read")
               .build();
       final var product = productRepository.findById("SKU001", specification);
@@ -60,9 +51,7 @@ class RepositoryTest {
     void byCreator() {
       final var specification =
           AcCriteria.builder()
-              .request(
-                  new Requester(
-                      1L, Map.of("user:read", new AccessByCreatorRestriction("creator:id"))))
+              .request(new Requester<>(1L, Map.of("user:read", new AccessByCreator("creator.id"))))
               .permission("user:read")
               .build();
 
@@ -100,7 +89,7 @@ class RepositoryTest {
     void findAllById() {
       final var specification =
           AcCriteria.builder()
-              .request(new Requester(1L, Map.of("office:read", new AccessByIdRestriction<>(1))))
+              .request(new Requester<>(1L, Map.of("office:read", new AccessById("id", 1))))
               .permission("office:read")
               .build();
 
@@ -116,7 +105,7 @@ class RepositoryTest {
     void findAllUnpaged() {
       final var specification =
           AcCriteria.builder()
-              .request(new Requester(1L, Map.of("office:read", new AccessByIdRestriction<>(1))))
+              .request(new Requester<>(1L, Map.of("office:read", new AccessById("id", 1))))
               .permission("office:read")
               .build();
 
@@ -130,7 +119,7 @@ class RepositoryTest {
     void findAllPagedOne() {
       final var specification =
           AcCriteria.builder()
-              .request(new Requester(1L, Map.of("office:read", new AccessByIdRestriction<>(1))))
+              .request(new Requester<>(1L, Map.of("office:read", new AccessById("id", 1))))
               .permission("office:read")
               .build();
 
@@ -144,7 +133,7 @@ class RepositoryTest {
     void findAllPagedOver() {
       final var specification =
           AcCriteria.builder()
-              .request(new Requester(1L, Map.of("office:read", new AccessByIdRestriction<>(1))))
+              .request(new Requester<>(1L, Map.of("office:read", new AccessById("id", 1))))
               .permission("office:read")
               .build();
 
@@ -157,13 +146,9 @@ class RepositoryTest {
 
   @Nested
   class Exists {
-    final AcCriteria acCriteria =
+    private final AcCriteria acCriteria =
         AcCriteria.builder()
-            .request(
-                Requester.builder()
-                    .id(1)
-                    .addPermission("office:read", new AccessByIdRestriction<>(1L))
-                    .build())
+            .request(new Requester<>(1L, Map.of("office:read", new AccessById("id", 1))))
             .permission("office:read")
             .build();
 

@@ -1,6 +1,5 @@
 package com.lprevidente.permissio.repository;
 
-import com.lprevidente.permissio.entity.HandlerEntity;
 import jakarta.persistence.*;
 import java.util.Objects;
 import org.hibernate.annotations.OnDelete;
@@ -56,14 +55,14 @@ class TeamMemberId {
 
 @Entity
 @Table(name = "team_members")
-public class TeamMember implements HandlerEntity<Long, String> {
+public class TeamMember {
 
   @EmbeddedId private TeamMemberId id;
 
   @ManyToOne
   @MapsId("memberId")
   @OnDelete(action = OnDeleteAction.CASCADE)
-  private User member;
+  private User user;
 
   @ManyToOne
   @MapsId("teamId")
@@ -74,18 +73,8 @@ public class TeamMember implements HandlerEntity<Long, String> {
 
   private String type;
 
-  public User getMember() {
-    return member;
-  }
-
-  @Override
-  public String getType() {
-    return "*";
-  }
-
-  @Override
-  public Long getHandlerId() {
-    return member.getId();
+  public User getUser() {
+    return user;
   }
 
   @Override

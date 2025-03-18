@@ -1,3 +1,12 @@
+-- CLEAN
+DELETE
+FROM users;
+DELETE
+FROM teams;
+DELETE
+FROM offices;
+
+-- After
 insert into users (id, creator_id)
 values (1, null),
        (2, 1);
@@ -17,7 +26,7 @@ insert into teams (id, name)
 values (1, 'Team 1'),
        (2, 'Team 2');
 
-insert into team_members (team_id, member_id, is_handler, type)
+insert into team_members (team_id, user_id, is_handler, type)
 values (1, 1, true, 'HR'),
        (1, 2, false, 'HR'),
        (2, 1, true, 'OP');

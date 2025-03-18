@@ -2,7 +2,6 @@ package com.lprevidente.permissio.repository;
 
 import static org.springframework.data.jpa.repository.query.QueryUtils.toOrders;
 
-import com.lprevidente.permissio.entity.BaseEntity;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.*;
@@ -20,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 @Transactional(readOnly = true)
-public class AcRepositoryImpl<T extends BaseEntity<ID>, ID> extends SimpleJpaRepository<T, ID>
+public class AcRepositoryImpl<T, ID> extends SimpleJpaRepository<T, ID>
     implements AcRepository<T, ID> {
 
   protected static final String FETCH = "jakarta.persistence.fetchgraph";
@@ -206,7 +205,9 @@ public class AcRepositoryImpl<T extends BaseEntity<ID>, ID> extends SimpleJpaRep
     final var cq = cb.createQuery(idClazz);
     final var root = cq.from(getDomainClass());
 
-    cq.where(criteria.toPredicate(root, cb)).select(root.get("id")).distinct(true);
+    cq.where(criteria.toPredicate(root, cb))
+        .select(root.get(entityInformation.getIdAttribute().getName()))
+        .distinct(true);
 
     return em.createQuery(cq).getResultList();
   }
@@ -274,7 +275,9 @@ public class AcRepositoryImpl<T extends BaseEntity<ID>, ID> extends SimpleJpaRep
     final var predicate =
         cb.and(
             root.get(entityInformation.getIdAttribute()).in(ids), acCriteria.toPredicate(root, cb));
-    cq.where(predicate).select(root.get("id")).distinct(true);
+    cq.where(predicate)
+        .select(root.get(entityInformation.getIdAttribute().getName()))
+        .distinct(true);
 
     final var res = new HashMap<ID, Boolean>();
     em.createQuery(cq).getResultStream().forEach(id -> res.put(id, true));

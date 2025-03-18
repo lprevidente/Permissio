@@ -1,7 +1,5 @@
 package com.lprevidente.permissio.repository;
 
-import com.lprevidente.permissio.entity.BaseEntity;
-import com.lprevidente.permissio.entity.Creatable;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
@@ -9,20 +7,10 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "products")
-public class Product implements BaseEntity<String>, Creatable<Long> {
+public class Product {
   @Id private String id;
 
   private Long creatorId;
-
-  @Override
-  public String getId() {
-    return id;
-  }
-
-  @Override
-  public Long getCreatorId() {
-    return creatorId;
-  }
 
   @Override
   public boolean equals(Object o) {

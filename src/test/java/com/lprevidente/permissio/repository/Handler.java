@@ -2,7 +2,6 @@ package com.lprevidente.permissio.repository;
 
 import static org.hibernate.annotations.OnDeleteAction.*;
 
-import com.lprevidente.permissio.entity.HandlerEntity;
 import jakarta.persistence.*;
 import java.io.Serializable;
 import java.util.Objects;
@@ -57,7 +56,7 @@ class HandlerId implements Serializable {
 @Entity
 @Table(name = "handlers")
 @IdClass(HandlerId.class)
-public class Handler implements HandlerEntity<Long, String> {
+public class Handler {
 
   @Id private Long id;
 
@@ -74,21 +73,11 @@ public class Handler implements HandlerEntity<Long, String> {
   private User user;
 
   @Override
-  public Long getHandlerId() {
-    return id;
-  }
-
-  @Override
-  public String getType() {
-    return type;
-  }
-
-  @Override
   public final boolean equals(Object o) {
     if (this == o) return true;
-    if (!(o instanceof Handler handler)) return false;
+    if (!(o instanceof Handler h)) return false;
 
-    return id == handler.id;
+    return Objects.equals(id, h.id);
   }
 
   @Override

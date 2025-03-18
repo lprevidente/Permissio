@@ -4,81 +4,41 @@ import jakarta.persistence.criteria.From;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
-import org.springframework.util.Assert;
 
-public abstract class Traversable {
-  protected final String property;
-  protected final List<String> fields;
+@SuppressWarnings("rawtypes")
+public class Traversable {
 
-  protected Traversable(String property) {
-    Assert.hasText(property, "Properties must not be empty");
-    this.property = property;
-    this.fields = new ArrayList<>(Arrays.asList(property.split(":")));
-  }
+  // Cannot be created
+  private Traversable() {}
 
-  public String getProperty() {
-    return property;
-  }
+  protected static Path get(Path<?> path, Map<String, Join> joinMap, String property) {
+    final var fields = property.split("\\.");
+    if (fields.length == 1) return path.get(fields[0]);
 
-  protected From<?, ?> joinLastPath(Path<?> path, Map<String, Join<?, ?>> joinMap) {
-    final var penultimatePath = getPenultimatePath(path, joinMap, fields);
-    final var lastField = fields.getLast();
-    final var key = penultimatePath.getModel().toString().concat(".").concat(lastField);
-    if (joinMap.containsKey(key)) return joinMap.get(key);
-    final var join = penultimatePath.join(lastField, JoinType.LEFT);
-    joinMap.put(key, join);
-    return join;
-  }
+    Path from = path;
+    for (int i = 0; i < fields.length - 1; i++) {
+      var field = fields[i];
+      final var key = getKeyJoin(from, field);
 
-  protected Path<?> getLastPath(
-    Path<?> path, Map<String, Join<?, ?>> joinMap, List<String> fields) {
-    final var penultimatePath = getPenultimatePath(path, joinMap, fields);
-    final var lastField = fields.getLast();
-    final var pathLast = penultimatePath.get(lastField);
-    final var key = penultimatePath.getModel().toString().concat(".").concat(lastField);
-
-    // TODO: generalize this to any type
-    if (pathLast.getJavaType() == Long.class || pathLast.getJavaType() == String.class)
-      return pathLast;
-
-    if (joinMap.containsKey(key)) return joinMap.get(key);
-
-    final var join = penultimatePath.join(lastField);
-    joinMap.put(key, join);
-    return join;
-  }
-
-  protected Path getLastPath(Path<?> path, Map<String, Join<?, ?>> joinMap) {
-    return getLastPath(path, joinMap, fields);
-  }
-
-  protected From<?, ?> getPenultimatePath(
-    Path<?> path, Map<String, Join<?, ?>> joinMap, List<String> fields) {
-
-    // Initialize the current path and join key
-    var currentPath = path;
-
-    // Iterate over fields except the last one to handle joins
-    for (int i = 0; i < fields.size() - 1; i++) {
-      final var field = fields.get(i);
-      final var key = currentPath.getModel().toString().concat(".").concat(field);
-
-      // Check if join already exists in the map
-      if (joinMap.containsKey(key)) {
-        currentPath = joinMap.get(key);
-      } else {
-        // If not, create a new join and add it to the map
-        final var from = (From<?, ?>) currentPath;
-        final var join = from.join(field, JoinType.LEFT);
-        joinMap.put(key, join);
-        currentPath = join;
-      }
+      if (!joinMap.containsKey(key)) joinMap.put(key, ((From) from).join(field, JoinType.LEFT));
+      from = joinMap.get(key);
     }
 
-    return (From<?, ?>) currentPath;
+    return from.get(fields[fields.length - 1]);
+  }
+
+  protected static From join(Path<?> path, Map<String, Join<?, ?>> joinMap, String field) {
+    final var key = getKeyJoin(path, field);
+
+    if (joinMap.containsKey(key)) return joinMap.get(key);
+    final var join = ((From) path).join(field, JoinType.LEFT);
+
+    joinMap.put(key, join);
+    return join;
+  }
+
+  private static String getKeyJoin(Path<?> path, String field) {
+    return path.getModel().toString().concat(".").concat(field);
   }
 }

@@ -4,22 +4,23 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Requester<ID> {
-  protected ID id;
+@SuppressWarnings("rawtypes")
+public class Requester<T> {
+  protected T id;
   protected Map<String, Restriction> permissions;
 
   public Requester(
-      @JsonProperty("id") ID id,
+      @JsonProperty("id") T id, //
       @JsonProperty("permissions") Map<String, Restriction> permissions) {
     this.id = id;
     this.permissions = permissions;
   }
 
-  public static <ID> Builder<ID> builder() {
+  public static <T> Builder<T> builder() {
     return new Builder<>();
   }
 
-  public ID getId() {
+  public T getId() {
     return id;
   }
 
@@ -27,23 +28,23 @@ public class Requester<ID> {
     return permissions;
   }
 
-  public static class Builder<ID> {
+  public static class Builder<T> {
     protected final Map<String, Restriction> permissions = new HashMap<>();
-    protected ID id;
+    protected T id;
 
     protected Builder() {}
 
-    public Builder<ID> id(ID id) {
+    public Builder<T> id(T id) {
       this.id = id;
       return this;
     }
 
-    public Builder<ID> addPermission(String permission, Restriction restriction) {
+    public Builder<T> addPermission(String permission, Restriction restriction) {
       permissions.put(permission, restriction);
       return this;
     }
 
-    public Requester<ID> build() {
+    public Requester<T> build() {
       return new Requester<>(id, permissions);
     }
   }

@@ -1,6 +1,5 @@
 package com.lprevidente.permissio.repository;
 
-import com.lprevidente.permissio.entity.BaseEntity;
 import jakarta.persistence.EntityManager;
 import java.util.Collection;
 import java.util.List;
@@ -14,8 +13,7 @@ import org.springframework.data.jpa.repository.support.JpaRepositoryImplementati
 import org.springframework.data.repository.NoRepositoryBean;
 
 @NoRepositoryBean
-public interface AcRepository<T extends BaseEntity<ID>, ID>
-    extends JpaRepositoryImplementation<T, ID> {
+public interface AcRepository<T, ID> extends JpaRepositoryImplementation<T, ID> {
 
   EntityManager getEntityManager();
 

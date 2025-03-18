@@ -1,6 +1,5 @@
 package com.lprevidente.permissio.repository;
 
-import com.lprevidente.permissio.entity.BaseEntity;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.data.mapping.context.MappingContext;
@@ -11,7 +10,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 
-public class AcRepositoryFactoryBean<T extends AcRepository<S, ID>, S extends BaseEntity<ID>, ID>
+class AcRepositoryFactoryBean<T extends AcRepository<S, ID>, S, ID>
     extends TransactionalRepositoryFactoryBeanSupport<T, S, ID> {
 
   @Nullable private EntityManager entityManager;
@@ -35,14 +34,13 @@ public class AcRepositoryFactoryBean<T extends AcRepository<S, ID>, S extends Ba
     super.setQueryLookupStrategyKey(queryLookupStrategyKey);
   }
 
-  public void setEscapeCharacter(char escapeCharacter) {
-  }
+  public void setEscapeCharacter(char escapeCharacter) {}
 
   @Override
   @NonNull
   protected RepositoryFactorySupport doCreateRepositoryFactory() {
     Assert.state(entityManager != null, "EntityManager must not be null");
-    return new AcRepositoryFactory<ID>(entityManager);
+    return new AcRepositoryFactory<T, ID>(entityManager);
   }
 
   @Override

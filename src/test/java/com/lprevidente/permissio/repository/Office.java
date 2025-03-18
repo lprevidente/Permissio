@@ -1,17 +1,13 @@
 package com.lprevidente.permissio.repository;
 
-import com.lprevidente.permissio.entity.BaseEntity;
-import com.lprevidente.permissio.entity.Creatable;
-import com.lprevidente.permissio.entity.Group;
-import com.lprevidente.permissio.entity.HandlerEntity;
 import jakarta.persistence.*;
-import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import org.springframework.lang.Nullable;
 
 @Entity
 @Table(name = "offices")
-public class Office implements BaseEntity<Long>, Group<User>, Creatable<Long>, HandlerEntity<Long, String> {
+public class Office {
   @Id private Long id;
 
   private String name;
@@ -32,29 +28,8 @@ public class Office implements BaseEntity<Long>, Group<User>, Creatable<Long>, H
   @ManyToOne(fetch = FetchType.LAZY)
   private User handler;
 
-  @Override
   public Long getId() {
     return id;
-  }
-
-  @Override
-  public Collection<User> getMembers() {
-    return members;
-  }
-
-  @Override
-  public Long getCreatorId() {
-    return creatorId;
-  }
-
-  @Override
-  public Long getHandlerId() {
-    return handler != null ? handler.getId() : -1;
-  }
-
-  @Override
-  public String getType() {
-    return "*";
   }
 
   @Override
@@ -62,7 +37,7 @@ public class Office implements BaseEntity<Long>, Group<User>, Creatable<Long>, H
     if (this == o) return true;
     if (!(o instanceof Office office)) return false;
 
-    return id == office.id;
+    return Objects.equals(id, office.id);
   }
 
   @Override
