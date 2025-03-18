@@ -16,6 +16,10 @@ along with custom JPA repository implementations to handle advanced query lookup
     - Leverages Spring Data JPA with custom repository implementations.
     - Supports dynamic query building with Criteria API and customizable query lookup strategies.
 
+- **JSON Serialization/Deserialization**:
+    - Built-in support for serializing and deserializing restrictions using Jackson.
+    - Easily store and retrieve access control rules in JSON format.
+
 ## Requirements
 
 - Java 21+
@@ -44,17 +48,17 @@ To use this library, add the following dependency to your `pom.xml`:
 Ensure that your Spring Boot application has the necessary configuration to enable JPA repositories.
 
    ```java
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-
-@SpringBootApplication
-@EnableAcRepositories(basePackages = "com.example.repositories")
-public class MyApplication {
-  public static void main(String[] args) {
-    SpringApplication.run(MyApplication.class, args);
-  }
-}
+    import org.springframework.boot.SpringApplication;
+    import org.springframework.boot.autoconfigure.SpringBootApplication;
+    import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+    
+    @SpringBootApplication
+    @EnableAcRepositories(basePackages = "com.example.repositories")
+    public class MyApplication {
+      public static void main(String[] args) {
+        SpringApplication.run(MyApplication.class, args);
+      }
+    }
 ```
 
 ## Available Restrictions
@@ -129,6 +133,97 @@ new And(new ById("id", 2L), new ByCreator("creator.id"))
 
 // Access entities that match either restriction
 new Or(new ById("id", 1L), new ByCreator("creator.id"))
+```
+
+## Serialization
+
+All restrictions can be serialized to and deserialized from JSON, making it easy to store and load access control rules. Jackson is used for JSON processing with type information included in the `@type` property.
+
+### JSON Representation of Restrictions
+
+#### ById
+```json
+{
+  "@type": "byId",
+  "property": "id",
+  "id": 1
+}
+```
+
+#### ByCreator
+```json
+{
+  "@type": "byCreator",
+  "property": "creator.id"
+}
+```
+
+#### ByMember
+```json
+{
+  "@type": "byMember",
+  "property": "members.id"
+}
+```
+
+#### ByHandler
+```json
+{
+  "@type": "byHandler",
+  "type": {
+    "type": "*",
+    "property": "handlers.handler"
+  },
+  "id": {
+    "field": "id",
+    "property": "handlers.handler"
+  }
+}
+```
+
+#### Composite Restrictions (And/Or)
+```json
+{
+  "@type": "and",
+  "restrictions": [
+    {
+      "@type": "byId",
+      "property": "id",
+      "id": 1
+    },
+    {
+      "@type": "byCreator",
+      "property": "creator.id"
+    }
+  ]
+}
+```
+
+#### ByRelatedEntity
+```json
+{
+  "@type": "byRelatedEntity",
+  "property": "team",
+  "restriction": {
+    "@type": "byId",
+    "property": "id",
+    "id": 1
+  }
+}
+```
+
+### Serialization Example
+
+```java
+// Create a restriction
+Restriction restriction = new ByRelatedEntity("team", new ById("id", 1));
+
+// Serialize to JSON
+ObjectMapper mapper = new ObjectMapper();
+String json = mapper.writeValueAsString(restriction);
+
+// Deserialize from JSON
+Restriction deserializedRestriction = mapper.readValue(json, Restriction.class);
 ```
 
 ## Usage Examples
@@ -246,10 +341,10 @@ Jackson's `ObjectMapper`.
    import org.springframework.context.annotation.Configuration;
 
    @Configuration
-   public class JacksonConfig {
+   class JacksonConfig {
 
      @Bean
-     public ObjectMapper objectMapper() {
+      ObjectMapper objectMapper() {
        ObjectMapper objectMapper = new ObjectMapper();
        objectMapper.registerSubtypes(new NamedType(CustomRestriction.class, "customRestriction"));
        return objectMapper;
