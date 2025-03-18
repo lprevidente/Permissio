@@ -1,7 +1,8 @@
 package com.lprevidente.permissio.restriction;
 
-import static com.lprevidente.permissio.restriction.Traversable.get;
+import static com.lprevidente.permissio.util.TraversableUtils.get;
 
+import com.lprevidente.permissio.entity.Requester;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Path;
@@ -10,10 +11,10 @@ import java.util.Map;
 import org.springframework.util.Assert;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
-public record AccessByRelatedEntity(String property, Restriction restriction)
+public record ByRelatedEntity(String property, Restriction restriction)
     implements Restriction<Requester> {
 
-  public AccessByRelatedEntity {
+  public ByRelatedEntity {
     Assert.hasText(property, "property must not be empty");
     Assert.notNull(restriction, "restriction must not be null");
   }

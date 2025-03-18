@@ -1,5 +1,6 @@
 package com.lprevidente.permissio.restriction;
 
+import com.lprevidente.permissio.entity.Requester;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Path;

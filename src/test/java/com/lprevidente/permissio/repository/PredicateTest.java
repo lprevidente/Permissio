@@ -1,8 +1,9 @@
 package com.lprevidente.permissio.repository;
 
-import static com.lprevidente.permissio.restriction.AccessByHandler.*;
+import static com.lprevidente.permissio.restriction.ByHandler.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.lprevidente.permissio.entity.Requester;
 import com.lprevidente.permissio.restriction.*;
 import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
@@ -56,7 +57,7 @@ class PredicateTest {
     void byId() {
       final var permission = "user:read";
       final var requester =
-          Requester.builder().id("").addPermission(permission, new AccessById("id", 1)).build();
+          Requester.builder().id("").addPermission(permission, new ById("id", 1)).build();
 
       final var criteria =
           AcCriteria.builder() //
@@ -80,16 +81,16 @@ class PredicateTest {
       final var requester =
           Requester.builder()
               .id(1L)
-              .addPermission(permission, new AccessByCreator("creator.id"))
+              .addPermission(permission, new ByCreator("creator.id"))
               .build();
 
-      final var specification =
+      final var criteria =
           AcCriteria.builder() //
               .request(requester)
               .permission(permission)
               .build();
 
-      final var users = userRepository.findAll(specification);
+      final var users = userRepository.findAll(criteria);
       assertThat(users).hasSize(1);
     }
 
@@ -101,27 +102,27 @@ class PredicateTest {
       final var requester =
           Requester.builder()
               .id(1L)
-              .addPermission(permission, new AccessByCreator("creatorId"))
+              .addPermission(permission, new ByCreator("creatorId"))
               .build();
 
-      final var specification =
+      final var criteria =
           AcCriteria.builder() //
               .request(requester)
               .permission(permission)
               .build();
 
-      final var users = officeRepository.findAll(specification);
+      final var users = officeRepository.findAll(criteria);
       assertThat(users).hasSize(1);
     }
   }
 
   @Nested
-  class AccessByMemberTest {
+  class ByMemberTest {
 
     @Test
     @DisplayName("Access by Member Restriction with relation 1->*")
     void byMemberRestrictionOneToMany() {
-      final var restriction = new AccessByMember("members.id");
+      final var restriction = new ByMember("members.id");
       final var permission = "office:read";
       final var requester = new Requester<>(1L, Map.of(permission, restriction));
 
@@ -138,7 +139,7 @@ class PredicateTest {
     @Test
     @DisplayName("Access by Member Restriction with relation *->*")
     void byMemberRestrictionManyToMany() {
-      final var restriction = new AccessByMember("attendees.id");
+      final var restriction = new ByMember("attendees.id");
       final var permission = "office:read";
       final var requester = new Requester<>(1L, Map.of(permission, restriction));
 
@@ -155,30 +156,30 @@ class PredicateTest {
     @Test
     @DisplayName("Access by Member Restriction with custom cross table")
     void byMemberRestrictionCrossTable() {
-      final var restriction = new AccessByMember("members.user.id");
+      final var restriction = new ByMember("members.user.id");
       final var permission = "team:read";
       final var requester = new Requester<>(1L, Map.of(permission, restriction));
 
-      final var specification =
+      final var criteria =
           AcCriteria.builder() //
               .request(requester)
               .permission(permission)
               .build();
 
-      final var offices = teamRepository.findAll(specification);
+      final var offices = teamRepository.findAll(criteria);
       assertThat(offices).hasSize(2);
     }
   }
 
   @Nested
-  class AccessByHandlerTest {
+  class ByHandlerTest {
 
     @Test
     @DisplayName("Access by Handler Restriction of Type *")
     void byHandlerRestriction() {
       final var permission = "user:read";
       final var restriction =
-          new AccessByHandler(
+          new ByHandler(
               new Type("*", "handlers.type"), new Id("id", "handlers.handler.id"));
 
       final var requester =
@@ -186,13 +187,13 @@ class PredicateTest {
               .id(1L) //
               .addPermission(permission, restriction)
               .build();
-      final var specification =
+      final var criteria =
           AcCriteria.builder() //
               .request(requester)
               .permission(permission)
               .build();
 
-      final var users = userRepository.findAll(specification);
+      final var users = userRepository.findAll(criteria);
 
       assertThat(users).hasSize(2);
     }
@@ -201,7 +202,7 @@ class PredicateTest {
     @DisplayName("Access by Handler Restriction of Type HR")
     void byHandlerHrRestriction() {
       final var restriction =
-          new AccessByHandler(
+          new ByHandler(
               new Type("HR", "handlers.type"), //
               new Id("id", "handlers.id"));
 
@@ -242,7 +243,7 @@ class PredicateTest {
     @Test
     @DisplayName("When and restriction is empty then apply in and")
     void byAndRestriction() {
-      final var restriction = new And(new AccessById("id", 2L), new AccessByCreator("creator.id"));
+      final var restriction = new And(new ById("id", 2L), new ByCreator("creator.id"));
 
       final var permission = "user:read";
       final var requester = new Requester<>(1L, Map.of(permission, restriction));
@@ -268,13 +269,13 @@ class PredicateTest {
       final var permission = "user:read";
       final var requester = new Requester<>(1L, Map.of(permission, restriction));
 
-      final var specification =
+      final var criteria =
           AcCriteria.builder() //
               .request(requester)
               .permission(permission)
               .build();
 
-      final var users = userRepository.findAll(specification);
+      final var users = userRepository.findAll(criteria);
       assertThat(users).hasSize(2);
     }
 
@@ -283,19 +284,19 @@ class PredicateTest {
     void byOrRestriction() {
       final var restriction =
           new Or(
-              new AccessById("id", 1L), //
-              new AccessByCreator("creator.id"));
+              new ById("id", 1L), //
+              new ByCreator("creator.id"));
 
       final var permission = "user:read";
       final var requester = new Requester<>(1L, Map.of(permission, restriction));
 
-      final var specification =
+      final var criteria =
           AcCriteria.builder() //
               .request(requester)
               .permission(permission)
               .build();
 
-      final var users = userRepository.findAll(specification);
+      final var users = userRepository.findAll(criteria);
       assertThat(users).hasSize(2);
     }
   }
@@ -306,7 +307,7 @@ class PredicateTest {
     @Test
     void byRelatedRestrictionOneToMany() {
 
-      final var restriction = new AccessByRelatedEntity("office", new AccessById("id", 1L));
+      final var restriction = new ByRelatedEntity("office", new ById("id", 1L));
       final var permission = "user:read";
       final var requester = new Requester<>(1L, Map.of(permission, restriction));
 
@@ -322,7 +323,7 @@ class PredicateTest {
 
     @Test
     void byRelatedRestrictionManyToMany() {
-      final var restriction = new AccessByRelatedEntity("teams.team", new AccessById("id", 1L));
+      final var restriction = new ByRelatedEntity("teams.team", new ById("id", 1L));
 
       final var permission = "user:read";
       final var requester = new Requester<>(1L, Map.of(permission, restriction));
@@ -340,9 +341,9 @@ class PredicateTest {
     @Test
     void byRelatedIds() {
       final var restriction =
-          new AccessByRelatedEntity(
+          new ByRelatedEntity(
               "teams.team", //
-              new Or(new AccessById("id", 1L), new AccessById("id", 2L)));
+              new Or(new ById("id", 1L), new ById("id", 2L)));
 
       final var permission = "user:read";
       final var requester = new Requester<>(1L, Map.of(permission, restriction));

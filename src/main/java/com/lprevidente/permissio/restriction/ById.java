@@ -1,5 +1,6 @@
 package com.lprevidente.permissio.restriction;
 
+import com.lprevidente.permissio.entity.Requester;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Path;
@@ -8,9 +9,9 @@ import java.util.Map;
 import org.springframework.util.Assert;
 
 @SuppressWarnings("rawtypes")
-public record AccessById(String property, Object id) implements Restriction<Requester> {
+public record ById(String property, Object id) implements Restriction<Requester> {
 
-  public AccessById {
+  public ById {
     Assert.notNull(id, "id cannot be null");
     Assert.hasText(property, "property must not be null");
   }

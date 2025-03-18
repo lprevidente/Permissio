@@ -1,7 +1,8 @@
 package com.lprevidente.permissio.restriction;
 
-import static com.lprevidente.permissio.restriction.Traversable.get;
+import static com.lprevidente.permissio.util.TraversableUtils.get;
 
+import com.lprevidente.permissio.entity.Requester;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Path;
@@ -10,9 +11,9 @@ import java.util.Map;
 import org.springframework.util.Assert;
 
 @SuppressWarnings("rawtypes")
-public record AccessByMember(String property) implements Restriction<Requester> {
+public record ByMember(String property) implements Restriction<Requester> {
 
-  public AccessByMember {
+  public ByMember {
     Assert.hasText(property, "property must not be null");
   }
 

@@ -1,6 +1,7 @@
 package com.lprevidente.permissio.repository;
 
 import com.lprevidente.permissio.entity.Relatable;
+import com.lprevidente.permissio.entity.Requester;
 import com.lprevidente.permissio.restriction.*;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Join;
@@ -78,7 +79,7 @@ public class AcCriteria {
               .map(r -> toPredicateRelated(r, key, path, cb, join))
               .filter(Objects::nonNull)
               .forEach(predicates::add);
-        else if (restriction instanceof AccessByRelatedEntity r && r.property().equals(key))
+        else if (restriction instanceof ByRelatedEntity r && r.property().equals(key))
           predicates.add(r.getRestriction().toPredicate(requester, path, cb, join));
       }
 
@@ -99,7 +100,7 @@ public class AcCriteria {
     if (restriction instanceof Conjunction) return cb.conjunction();
     if (restriction instanceof Disjunction) return cb.disjunction();
 
-    if (restriction instanceof AccessByRelatedEntity rs && rs.getRestriction().equals(key))
+    if (restriction instanceof ByRelatedEntity rs && rs.getRestriction().equals(key))
       return rs.getRestriction().toPredicate(requester, path, cb, join);
     return null;
   }

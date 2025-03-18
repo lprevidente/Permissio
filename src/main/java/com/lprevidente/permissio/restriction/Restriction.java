@@ -3,6 +3,7 @@ package com.lprevidente.permissio.restriction;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.lprevidente.permissio.entity.Requester;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Path;
@@ -11,11 +12,11 @@ import java.util.Map;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "@type")
 @JsonSubTypes({
-  @Type(value = AccessById.class, name = "byId"),
-  @Type(value = AccessByHandler.class, name = "byHandler"),
-  @Type(value = AccessByCreator.class, name = "byCreator"),
-  @Type(value = AccessByMember.class, name = "byMember"),
-  @Type(value = AccessByRelatedEntity.class, name = "byRelatedEntity"),
+  @Type(value = ById.class, name = "byId"),
+  @Type(value = ByHandler.class, name = "byHandler"),
+  @Type(value = ByCreator.class, name = "byCreator"),
+  @Type(value = ByMember.class, name = "byMember"),
+  @Type(value = ByRelatedEntity.class, name = "byRelatedEntity"),
   @Type(value = And.class, name = "and"),
   @Type(value = Or.class, name = "or"),
   @Type(value = Conjunction.class, name = "*"),

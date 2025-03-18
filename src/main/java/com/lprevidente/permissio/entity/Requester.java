@@ -1,6 +1,8 @@
-package com.lprevidente.permissio.restriction;
+package com.lprevidente.permissio.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.lprevidente.permissio.restriction.Restriction;
+
 import java.util.HashMap;
 import java.util.Map;
 
