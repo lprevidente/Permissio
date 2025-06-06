@@ -4,7 +4,6 @@ import com.lprevidente.permissio.entity.Relatable;
 import com.lprevidente.permissio.entity.Requester;
 import com.lprevidente.permissio.restriction.*;
 import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
 import java.util.*;
@@ -40,7 +39,6 @@ public class AcCriteria {
   }
 
   public Predicate toPredicate(Path<?> path, CriteriaBuilder cb) {
-    final var join = new HashMap<String, Join<?, ?>>();
     final var restrictions =
         permissions.stream()
             .map(p -> requester.getPermissions().getOrDefault(p, new Disjunction()))
@@ -54,14 +52,13 @@ public class AcCriteria {
         .anyMatch(Conjunction.class::isInstance)) return cb.conjunction();
 
     return restrictions.stream()
-        .map(r -> r.toPredicate(requester, path, cb, join))
+        .map(r -> r.toPredicate(requester, path, cb))
         .reduce(cb::or)
         .orElse(cb.conjunction());
   }
 
   public Predicate getPredicateRelated(Path<?> path, CriteriaBuilder cb) {
     try {
-      final var join = new HashMap<String, Join<?, ?>>();
       final var predicates = new ArrayList<Predicate>();
 
       final var obj = path.getJavaType().getConstructor().newInstance();
@@ -76,11 +73,11 @@ public class AcCriteria {
         final var restriction = requester.getPermissions().getOrDefault(p, new Conjunction());
         if (restriction instanceof Or or)
           Arrays.stream(or.restrictions())
-              .map(r -> toPredicateRelated(r, key, path, cb, join))
+              .map(r -> toPredicateRelated(r, key, path, cb))
               .filter(Objects::nonNull)
               .forEach(predicates::add);
         else if (restriction instanceof ByRelatedEntity r && r.property().equals(key))
-          predicates.add(r.getRestriction().toPredicate(requester, path, cb, join));
+          predicates.add(r.getRestriction().toPredicate(requester, path, cb));
       }
 
       if (predicates.isEmpty()) return cb.conjunction();
@@ -92,16 +89,12 @@ public class AcCriteria {
   }
 
   private Predicate toPredicateRelated(
-      Restriction restriction,
-      Object key,
-      Path<?> path,
-      CriteriaBuilder cb,
-      Map<String, Join<?, ?>> join) {
+      Restriction restriction, Object key, Path<?> path, CriteriaBuilder cb) {
     if (restriction instanceof Conjunction) return cb.conjunction();
     if (restriction instanceof Disjunction) return cb.disjunction();
 
     if (restriction instanceof ByRelatedEntity rs && rs.getRestriction().equals(key))
-      return rs.getRestriction().toPredicate(requester, path, cb, join);
+      return rs.getRestriction().toPredicate(requester, path, cb);
     return null;
   }
 

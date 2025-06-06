@@ -2,11 +2,9 @@ package com.lprevidente.permissio.restriction;
 
 import com.lprevidente.permissio.entity.Requester;
 import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
 import java.util.Arrays;
-import java.util.Map;
 import org.springframework.util.Assert;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
@@ -17,13 +15,9 @@ public record And(Restriction... restrictions) implements Restriction<Requester>
   }
 
   @Override
-  public Predicate toPredicate(
-      Requester requester, //
-      Path<?> path,
-      CriteriaBuilder cb,
-      Map<String, Join> join) {
+  public Predicate toPredicate(Requester requester, Path<?> path, CriteriaBuilder cb) {
     return Arrays.stream(restrictions)
-        .map(restriction -> restriction.toPredicate(requester, path, cb, join))
+        .map(restriction -> restriction.toPredicate(requester, path, cb))
         .reduce(cb::and)
         .orElse(cb.conjunction());
   }

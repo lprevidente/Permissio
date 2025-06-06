@@ -5,10 +5,9 @@ import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.lprevidente.permissio.entity.Requester;
 import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
-import java.util.Map;
+import java.util.Arrays;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "@type")
 @JsonSubTypes({
@@ -25,17 +24,20 @@ import java.util.Map;
 @SuppressWarnings("rawtypes")
 public interface Restriction<R extends Requester> {
 
+  default Path get(Path<?> path, String property) {
+    final var fields = property.split("\\.");
+    return Arrays.stream(fields).reduce(path, Path::get, (a, b) -> b);
+  }
+
   /**
    * Transform the restriction to Predicate
    *
    * @param requester
    * @param path table from which the predicate is generated
    * @param cb {@link CriteriaBuilder} mandatory to create query
-   * @param joinMap to avoid multiple joins with the same table
    */
   Predicate toPredicate(
       R requester, //
       Path<?> path,
-      CriteriaBuilder cb,
-      Map<String, Join> joinMap);
+      CriteriaBuilder cb);
 }

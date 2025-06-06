@@ -79,10 +79,7 @@ class PredicateTest {
       final var permission = "user:read";
 
       final var requester =
-          Requester.builder()
-              .id(1L)
-              .addPermission(permission, new ByCreator("creator.id"))
-              .build();
+          Requester.builder().id(1L).addPermission(permission, new ByCreator("creator.id")).build();
 
       final var criteria =
           AcCriteria.builder() //
@@ -100,10 +97,7 @@ class PredicateTest {
       final var permission = "user:read";
 
       final var requester =
-          Requester.builder()
-              .id(1L)
-              .addPermission(permission, new ByCreator("creatorId"))
-              .build();
+          Requester.builder().id(1L).addPermission(permission, new ByCreator("creatorId")).build();
 
       final var criteria =
           AcCriteria.builder() //
@@ -179,8 +173,7 @@ class PredicateTest {
     void byHandlerRestriction() {
       final var permission = "user:read";
       final var restriction =
-          new ByHandler(
-              new Type("*", "handlers.type"), new Id("id", "handlers.handler.id"));
+          new ByHandler(new Type("*", "handlers.type"), new Id("id", "handlers.handler.id"));
 
       final var requester =
           Requester.builder()
@@ -242,7 +235,7 @@ class PredicateTest {
 
     @Test
     @DisplayName("When and restriction is empty then apply in and")
-    void byAndRestriction() {
+    void byIdAndByCreatorRestriction() {
       final var restriction = new And(new ById("id", 2L), new ByCreator("creator.id"));
 
       final var permission = "user:read";
@@ -256,6 +249,30 @@ class PredicateTest {
 
       final var users = userRepository.findAll(criteria);
       assertThat(users).hasSize(1);
+    }
+
+    @Test
+    @DisplayName("When and restriction is empty then apply in and")
+    void byIdAndAndMemberRestriction() {
+      final var restriction =
+          new And(
+              new ById("id", 2L), // Id
+              new ByMember("teams.user.id"), // Member
+              new ByHandler( // Handler
+                  new Type("*", "handlers.type"), //
+                  new Id("id", "handlers.handler.id")));
+
+      final var permission = "user:read";
+      final var requester = new Requester<>(1L, Map.of(permission, restriction));
+
+      final var criteria =
+          AcCriteria.builder() //
+              .request(requester)
+              .permission(permission)
+              .build();
+
+      final var users = userRepository.findAll(criteria);
+      assertThat(users).isEmpty();
     }
   }
 
@@ -284,8 +301,11 @@ class PredicateTest {
     void byOrRestriction() {
       final var restriction =
           new Or(
-              new ById("id", 1L), //
-              new ByCreator("creator.id"));
+              new ById("id", 2L), // Id
+              new ByMember("teams.user.id"), // Member
+              new ByHandler( // Handler
+                  new Type("*", "handlers.type"), //
+                  new Id("id", "handlers.handler.id")));
 
       final var permission = "user:read";
       final var requester = new Requester<>(1L, Map.of(permission, restriction));

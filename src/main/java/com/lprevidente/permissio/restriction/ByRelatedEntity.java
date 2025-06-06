@@ -1,13 +1,7 @@
 package com.lprevidente.permissio.restriction;
 
-import static com.lprevidente.permissio.util.TraversableUtils.get;
-
 import com.lprevidente.permissio.entity.Requester;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.Path;
-import jakarta.persistence.criteria.Predicate;
-import java.util.Map;
+import jakarta.persistence.criteria.*;
 import org.springframework.util.Assert;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
@@ -24,12 +18,8 @@ public record ByRelatedEntity(String property, Restriction restriction)
   }
 
   @Override
-  public Predicate toPredicate(
-      Requester requester, //
-      Path<?> path,
-      CriteriaBuilder cb,
-      Map<String, Join> join) {
-    final var lastPath = get(path, join, property);
-    return restriction.toPredicate(requester, lastPath, cb, join);
+  public Predicate toPredicate(Requester requester, Path<?> path, CriteriaBuilder cb) {
+    final var lastPath = get(path, property);
+    return restriction.toPredicate(requester, lastPath, cb);
   }
 }

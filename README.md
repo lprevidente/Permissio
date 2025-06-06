@@ -133,7 +133,7 @@ The library provides various restriction types to control access to entities:
 Restricts access to entities with a specific property value.
 
 ```java
-new ById("id",1) // Access entity with id = 1
+new ById("id",1); // Access entity with id = 1
 ```
 
 #### ByCreator
@@ -141,10 +141,8 @@ new ById("id",1) // Access entity with id = 1
 Restricts access to entities created by the current requester.
 
 ```java
-new ByCreator("creator.id") // Access entities where creator.id equals requester's ID
-new
-
-ByCreator("creatorId")  // Access entities where creatorId equals requester's ID
+new ByCreator("creator.id"); // Access entities where creator.id equals requester's ID
+new ByCreator("creatorId");  // Access entities where creatorId equals requester's ID
 ```
 
 #### ByMember
@@ -152,10 +150,8 @@ ByCreator("creatorId")  // Access entities where creatorId equals requester's ID
 Restricts access to entities where the requester is a member.
 
 ```java
-new ByMember("members.id")      // For one-to-many relationships
-new
-
-ByMember("members.user.id") // For custom join relationships
+new ByMember("members.id");      // For one-to-many relationships
+new ByMember("members.user.id"); // For custom join relationships
 ```
 
 #### ByHandler
@@ -166,20 +162,14 @@ Restricts access based on handlers with specific type and ID.
 // Any handler type where handler.id matches the requester's ID
 new ByHandler(
     new Type("*", "handlers.type"), 
-    new
-
-Id("id","handlers.handler.id")
-)
+    new Id("id","handlers.handler.id")
+);
 
 // Only HR type handlers where handler.id matches the requester's ID
-    new
-
-ByHandler(
+new ByHandler(
     new Type("HR", "handlers.type"),
-    new
-
-Id("id","handlers.id")
-)
+    new Id("id","handlers.id")
+);
 ```
 
 #### ByRelatedEntity
@@ -188,12 +178,10 @@ Restricts access based on properties of a related entity.
 
 ```java
 // Access users related to office with ID 1
-new ByRelatedEntity("office",new ById("id", 1L))
+new ByRelatedEntity("office",new ById("id", 1L));
 
 // Access users who are members of teams with ID 1
-    new
-
-ByRelatedEntity("teams.team",new ById("id", 1L))
+new ByRelatedEntity("teams.team",new ById("id", 1L));
 ```
 
 #### Composite Restrictions (And/Or)
@@ -202,16 +190,10 @@ Combine multiple restrictions with logical operators.
 
 ```java
 // Access entities that match both restrictions
-new And(new ById("id", 2L), new
-
-ByCreator("creator.id"))
+new And(new ById("id", 2L), new ByCreator("creator.id"));
 
 // Access entities that match either restriction
-    new
-
-Or(new ById("id", 1L), new
-
-ByCreator("creator.id"))
+new Or(new ById("id", 1L), new ByCreator("creator.id"));
 ```
 
 ## Serialization

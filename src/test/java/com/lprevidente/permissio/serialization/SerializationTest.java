@@ -19,8 +19,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 @EnableAcRepositories("com.lprevidente.permissio.repository")
 class SerializationTest {
 
-
-
   private final ObjectMapper mapper;
 
   public SerializationTest() {
